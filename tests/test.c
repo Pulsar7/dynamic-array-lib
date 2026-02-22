@@ -37,18 +37,18 @@ int main(int argc, const char** argv) {
     test_clear_array_another_dynamic_array_as_element();
     printf("O.K.\n");
 
-    printf("  > Testing 'test_append_multiple_other_dynamic_array_as_elements()'...");
-    test_append_multiple_other_dynamic_array_as_elements();
+    printf("  > Testing 'test_append_multiple_other_dynamic_arrays_as_elements()'...");
+    test_append_multiple_other_dynamic_arrays_as_elements();
     printf("O.K.\n");
-    printf("  > Testing 'test_clear_array_multiple_other_dynamic_array_as_elements()'...");
-    test_clear_array_multiple_other_dynamic_array_as_elements();
+    printf("  > Testing 'test_clear_array_multiple_other_dynamic_arrays_as_elements()'...");
+    test_clear_array_multiple_other_dynamic_arrays_as_elements();
     printf("O.K.\n");
 
-    printf("  > Testing 'test_append_multiple_other_dynamic_array_as_elements_with_multiple_subelements()'...");
-    test_append_multiple_other_dynamic_array_as_elements_with_multiple_subelements();
+    printf("  > Testing 'test_append_one_dimensional_dyn_arrays_to_two_dimensional_array()'...");
+    test_append_one_dimensional_dyn_arrays_to_two_dimensional_array();
     printf("O.K.\n");
-    printf("  > Testing 'test_clear_array_multiple_other_dynamic_array_as_elements_with_multiple_subelements()'...");
-    test_clear_array_multiple_other_dynamic_array_as_elements_with_multiple_subelements();
+    printf("  > Testing 'test_clear_one_dimensional_dyn_arrays_in_two_dimensional_array()'...");
+    test_clear_one_dimensional_dyn_arrays_in_two_dimensional_array();
     printf("O.K.\n");
 
     printf("\n> Testing invalid arrays\n");

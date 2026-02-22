@@ -16,11 +16,11 @@ void test_clear_array_multiple_integer_elements();
 void test_append_another_dynamic_array_as_element();
 void test_clear_array_another_dynamic_array_as_element();
 
-void test_append_multiple_other_dynamic_array_as_elements();
-void test_clear_array_multiple_other_dynamic_array_as_elements();
+void test_append_multiple_other_dynamic_arrays_as_elements();
+void test_clear_array_multiple_other_dynamic_arrays_as_elements();
 
-void test_append_multiple_other_dynamic_array_as_elements_with_multiple_subelements();
-void test_clear_array_multiple_other_dynamic_array_as_elements_with_multiple_subelements();
+void test_append_one_dimensional_dyn_arrays_to_two_dimensional_array();
+void test_clear_one_dimensional_dyn_arrays_in_two_dimensional_array();
 
 /*
     Invalid arrays

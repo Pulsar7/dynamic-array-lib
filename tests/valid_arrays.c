@@ -129,8 +129,8 @@ void test_append_another_dynamic_array_as_element() {
     assert(*(int*)((DynamicArray*)dynamic_array.tail_ptr->data)->head_ptr->data == sub_array_integer);
     assert(*(int*)((DynamicArray*)dynamic_array.tail_ptr->data)->tail_ptr->data == sub_array_integer);
 
-    clear_array(&dynamic_array);
     clear_array(&sub_dynamic_array);
+    clear_array(&dynamic_array);
 }
 
 void test_clear_array_another_dynamic_array_as_element() {
@@ -145,16 +145,15 @@ void test_clear_array_another_dynamic_array_as_element() {
     append_element(&dynamic_array, sizeof(DynamicArray), (void*)&sub_dynamic_array);
 
     assert(clear_array(&dynamic_array) == NOERROR);
-    // Should already be deallocated now
     assert(clear_array(&sub_dynamic_array) == NOERROR);
 }
 
 /*
     Test valid arrays with multiple other dynamic-array as elements
 
-    - Each sub-dyn-array has only one element
+    - Each sub-dynamic-array has only one element
 */
-void test_append_multiple_other_dynamic_array_as_elements() {
+void test_append_multiple_other_dynamic_arrays_as_elements() {
     DynamicArray dynamic_array;
     init_array(&dynamic_array);
 
@@ -173,10 +172,16 @@ void test_append_multiple_other_dynamic_array_as_elements() {
         current_ptr = current_ptr->next_ptr;
     }
 
+    current_ptr = dynamic_array.head_ptr;
+    while (current_ptr != NULL) {
+        clear_array((DynamicArray*)current_ptr->data);
+        current_ptr = current_ptr->next_ptr;
+    }
+
     clear_array(&dynamic_array);
 }
 
-void test_clear_array_multiple_other_dynamic_array_as_elements() {
+void test_clear_array_multiple_other_dynamic_arrays_as_elements() {
     DynamicArray dynamic_array;
     init_array(&dynamic_array);
 
@@ -188,60 +193,78 @@ void test_clear_array_multiple_other_dynamic_array_as_elements() {
         assert(append_element(&dynamic_array, sizeof(DynamicArray), (void*)&sub_dynamic_array) == NOERROR);
     }
 
+    DynamicArrayNode* current_ptr = dynamic_array.head_ptr;
+    while (current_ptr != NULL) {
+        assert(clear_array((DynamicArray*)current_ptr->data) == NOERROR);
+        current_ptr = current_ptr->next_ptr;
+    }
+
     assert(clear_array(&dynamic_array) == NOERROR);
 }
 
 
 /*
-    Test valid arrays with multiple other dynamic-array as elements
+    Test valid two-dimensional dynamic-arrays with one-dimensional dynamic-arrays as elements
 
-    - Each sub-dyn-array has multiple elements
+    - Each sub-dynamic-array has multiple elements
 */
-void test_append_multiple_other_dynamic_array_as_elements_with_multiple_subelements() {
-    DynamicArray dynamic_array;
-    init_array(&dynamic_array);
+void test_append_one_dimensional_dyn_arrays_to_two_dimensional_array() {
+    DynamicArray one_dimensional_array;
+    init_array(&one_dimensional_array);
 
-    DynamicArray sub_dynamic_array;
-    const int max_sub_dyn_arrays = 3;
-    const int max_sub_dyn_arrays_elements = 3;
-    for (int array_counter = 0; array_counter <= max_sub_dyn_arrays; array_counter++) {
-        init_array(&sub_dynamic_array);
-        for (int sub_element = 0; sub_element <= max_sub_dyn_arrays_elements; sub_element++) {
-            assert(append_element(&sub_dynamic_array, sizeof(int), (void*)&sub_element) == NOERROR);
+    DynamicArray two_dimensional_array;
+    const int max_two_dim_arrays = 3;
+    const int max_two_dim_arrays_elements = 3;
+    for (int array_counter = 0; array_counter <= max_two_dim_arrays; array_counter++) {
+        init_array(&two_dimensional_array);
+        for (int sub_element = 0; sub_element <= max_two_dim_arrays_elements; sub_element++) {
+            assert(append_element(&two_dimensional_array, sizeof(int), (void*)&sub_element) == NOERROR);
         }
-        assert(append_element(&dynamic_array, sizeof(DynamicArray), (void*)&sub_dynamic_array) == NOERROR);
+        assert(append_element(&one_dimensional_array, sizeof(DynamicArray), (void*)&two_dimensional_array) == NOERROR);
     }
 
-    DynamicArrayNode* current_ptr = dynamic_array.head_ptr;
-    DynamicArrayNode* sub_array_current_ptr = NULL;
-    int sub_element = 0;
+    DynamicArrayNode* current_ptr = one_dimensional_array.head_ptr;
+    DynamicArrayNode* two_dim_array_current_ptr = NULL;
+    int element = 0;
     while (current_ptr != NULL) {
-        sub_array_current_ptr = ((DynamicArray*)current_ptr->data)->head_ptr;
-        sub_element = 0;
-        while (sub_array_current_ptr != NULL) {
-            assert(*(int*)sub_array_current_ptr->data == sub_element++);
-            sub_array_current_ptr = sub_array_current_ptr->next_ptr;
+        two_dim_array_current_ptr = ((DynamicArray*)current_ptr->data)->head_ptr;
+        element = 0;
+        while (two_dim_array_current_ptr != NULL) {
+            assert(*(int*)two_dim_array_current_ptr->data == element++);
+            two_dim_array_current_ptr = two_dim_array_current_ptr->next_ptr;
         } 
         current_ptr = current_ptr->next_ptr;
     }
 
-    clear_array(&dynamic_array);
-}
-
-void test_clear_array_multiple_other_dynamic_array_as_elements_with_multiple_subelements() {
-    DynamicArray dynamic_array;
-    init_array(&dynamic_array);
-
-    DynamicArray sub_dynamic_array;
-    const int max_sub_dyn_arrays = 10;
-    const int max_sub_dyn_arrays_elements = 10;
-    for (int array_counter = 0; array_counter <= max_sub_dyn_arrays; array_counter++) {
-        init_array(&sub_dynamic_array);
-        for (int sub_element = 0; sub_element <= max_sub_dyn_arrays_elements; sub_element++) {
-            assert(append_element(&sub_dynamic_array, sizeof(int), (void*)&sub_element) == NOERROR);
-        }
-        assert(append_element(&dynamic_array, sizeof(DynamicArray), (void*)&sub_dynamic_array) == NOERROR);
+    current_ptr = one_dimensional_array.head_ptr;
+    while (current_ptr != NULL) {
+        clear_array((DynamicArray*)current_ptr->data);
+        current_ptr = current_ptr->next_ptr;
     }
 
-    assert(clear_array(&dynamic_array) == NOERROR);
+    clear_array(&one_dimensional_array);
+}
+
+void test_clear_one_dimensional_dyn_arrays_in_two_dimensional_array() {
+    DynamicArray one_dimensional_array;
+    init_array(&one_dimensional_array);
+
+    DynamicArray two_dimensional_array;
+    const int max_two_dim_arrays = 10;
+    const int max_two_dim_arrays_elements = 10;
+    for (int array_counter = 0; array_counter <= max_two_dim_arrays; array_counter++) {
+        init_array(&two_dimensional_array);
+        for (int sub_element = 0; sub_element <= max_two_dim_arrays_elements; sub_element++) {
+            assert(append_element(&two_dimensional_array, sizeof(int), (void*)&sub_element) == NOERROR);
+        }
+        assert(append_element(&one_dimensional_array, sizeof(DynamicArray), (void*)&two_dimensional_array) == NOERROR);
+    }
+
+    DynamicArrayNode* current_ptr = one_dimensional_array.head_ptr;
+    while (current_ptr != NULL) {
+        clear_array((DynamicArray*)current_ptr->data);
+        current_ptr = current_ptr->next_ptr;
+    }
+
+    assert(clear_array(&one_dimensional_array) == NOERROR);
 }
