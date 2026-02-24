@@ -22,7 +22,6 @@ ERROR_CODE init_array(DynamicArray* array) {
     return NOERROR;
 }
 
-
 /*
 Helper function, to check if the given dynamic-array is invalid.
 
@@ -106,13 +105,11 @@ ERROR_CODE append_element(DynamicArray* array, size_t element_size, void* elemen
     if (array->head_ptr == NULL) {
         // First element in array
         array->head_ptr = current_ptr;
-        array->tail_ptr = current_ptr;
         current_ptr->prev_ptr = NULL;
         
     } else if (array->head_ptr == array->tail_ptr) {
         // Second element in array
         array->head_ptr->next_ptr = current_ptr;
-        array->tail_ptr = current_ptr;
         current_ptr->next_ptr = NULL;
         current_ptr->prev_ptr = array->head_ptr;
     
@@ -120,8 +117,9 @@ ERROR_CODE append_element(DynamicArray* array, size_t element_size, void* elemen
         // At least two elements in array
         array->tail_ptr->next_ptr = current_ptr;
         current_ptr->prev_ptr = array->tail_ptr;
-        array->tail_ptr = current_ptr;
     }
+
+    array->tail_ptr = current_ptr;
 
     return NOERROR;
 }
