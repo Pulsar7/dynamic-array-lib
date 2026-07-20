@@ -67,6 +67,8 @@ Append elements of static-array to new dynamic-array.
 void append_static_array() {
     DynArray dynamic_array;
     assert(init_dyn_array(&dynamic_array) == NO_ERROR);
+    //
+    // Append static-integer-array to dynamic-array
     int static_int_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     assert(append_static_array_elements_to_dyn_array(&dynamic_array, (void*)static_int_array, sizeof(int), (size_t)9) == NO_ERROR);
     assert(get_first(&dynamic_array) != get_last(&dynamic_array));
@@ -74,7 +76,8 @@ void append_static_array() {
     size_t array_len;
     assert(get_len(&dynamic_array, &array_len) == true);
     assert(array_len == 9);
-
+    //
+    // Append string to dynamic-array
     char* static_char_array = "HeLlO WoRlD";
     size_t static_char_array_len = strlen(static_char_array);
     assert(append_static_array_elements_to_dyn_array(&dynamic_array, (void*)static_char_array, sizeof(char), static_char_array_len) == NO_ERROR);
@@ -82,8 +85,9 @@ void append_static_array() {
     assert(*(char*)get_first(&dynamic_array) != *(char*)get_last(&dynamic_array));
     assert(get_len(&dynamic_array, &array_len) == true);
     assert(array_len == 9+static_char_array_len);
+    //
+    // Clear dynamic-array
     assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
-    
     assert(dynamic_array.head_ptr == NULL);
     assert(dynamic_array.tail_ptr == NULL);
 }
@@ -94,6 +98,8 @@ Append whole static-array as one element to new dynamic-array.
 void append_static_array_as_one_element() {
     DynArray dynamic_array;
     assert(init_dyn_array(&dynamic_array) == NO_ERROR);
+    //
+    // Add string as one element to dynamic-array (one node)
     char* static_char_array = "HeLlO WoRlD";
     size_t static_char_array_len = strlen(static_char_array);
     assert(append_element_to_dyn_array(&dynamic_array, (void*)static_char_array, sizeof(char)*((size_t)static_char_array_len)) == NO_ERROR);
@@ -101,6 +107,11 @@ void append_static_array_as_one_element() {
     size_t array_len;
     assert(get_len(&dynamic_array, &array_len) == true);
     assert(array_len == 1);
+    //
+    // Get string from dynamic-array
+    assert(strncmp((char*)get_element_by_index(&dynamic_array, 0), static_char_array, static_char_array_len) == 0);
+    //
+    // Clear dynamic-array
     assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
     assert(dynamic_array.head_ptr == NULL);
     assert(dynamic_array.tail_ptr == NULL);
