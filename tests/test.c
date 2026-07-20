@@ -157,6 +157,111 @@ void test_append_dyn_arrays_inplace() {
     assert(dynamic_array_b.tail_ptr == NULL);
 }
 
+/*
+Test to swap elements of dynamic-array by its indices.
+*/
+void test_swap_elements_by_indices() {
+    DynArray dynamic_array;
+    assert(init_dyn_array(&dynamic_array) == NO_ERROR);
+    //
+    // Append static-integer-array to dynamic-array
+    int static_int_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    assert(append_static_array_elements_to_dyn_array(&dynamic_array, (void*)static_int_array, sizeof(int), (size_t)9) == NO_ERROR);
+    /**
+     * 
+     * Scenario 1: head_ptr and tail_ptr
+     * 
+     */
+    //
+    // Get element-a
+    size_t element_a_index = 0;
+    assert(*(int*)get_element_by_index(&dynamic_array, element_a_index) == 1);
+    //
+    // Get element-b
+    size_t element_b_index = 8;
+    assert(*(int*)get_element_by_index(&dynamic_array, element_b_index) == 9);
+    //
+    // Swap element-a and element-b
+    assert(swap_elements_by_indices(&dynamic_array, element_a_index, element_b_index) == NO_ERROR);
+    //
+    // Get element-a
+    assert(*(int*)get_element_by_index(&dynamic_array, element_a_index) == 9);
+    //
+    // Get element-b
+    assert(*(int*)get_element_by_index(&dynamic_array, element_b_index) == 1);
+    /**
+     * 
+     * Scenario 2: neither head_ptr nor tail_ptr
+     * 
+     */
+    //
+    // Get element-a
+    element_a_index = 1;
+    assert(*(int*)get_element_by_index(&dynamic_array, element_a_index) == 2);
+    //
+    // Get element-b
+    element_b_index = 4;
+    assert(*(int*)get_element_by_index(&dynamic_array, element_b_index) == 5);
+    //
+    // Swap element-a and element-b
+    assert(swap_elements_by_indices(&dynamic_array, element_a_index, element_b_index) == NO_ERROR);
+    //
+    // Get element-a
+    assert(*(int*)get_element_by_index(&dynamic_array, element_a_index) == 5);
+    //
+    // Get element-b
+    assert(*(int*)get_element_by_index(&dynamic_array, element_b_index) == 2);
+    /**
+     * 
+     * Scenario 3: only head_ptr
+     * 
+     */
+    //
+    // Get element-a
+    element_a_index = 0;
+    assert(*(int*)get_element_by_index(&dynamic_array, element_a_index) == 9);
+    //
+    // Get element-b
+    element_b_index = 4;
+    assert(*(int*)get_element_by_index(&dynamic_array, element_b_index) == 2);
+    //
+    // Swap element-a and element-b
+    assert(swap_elements_by_indices(&dynamic_array, element_a_index, element_b_index) == NO_ERROR);
+    //
+    // Get element-a
+    assert(*(int*)get_element_by_index(&dynamic_array, element_a_index) == 2);
+    //
+    // Get element-b
+    assert(*(int*)get_element_by_index(&dynamic_array, element_b_index) == 9);
+    /**
+     * 
+     * Scenario 4: only tail_ptr
+     * 
+     */
+    //
+    // Get element-a
+    element_a_index = 3;
+    assert(*(int*)get_element_by_index(&dynamic_array, element_a_index) == 4);
+    //
+    // Get element-b
+    element_b_index = 8;
+    assert(*(int*)get_element_by_index(&dynamic_array, element_b_index) == 1);
+    //
+    // Swap element-a and element-b
+    assert(swap_elements_by_indices(&dynamic_array, element_a_index, element_b_index) == NO_ERROR);
+    //
+    // Get element-a
+    assert(*(int*)get_element_by_index(&dynamic_array, element_a_index) == 1);
+    //
+    // Get element-b
+    assert(*(int*)get_element_by_index(&dynamic_array, element_b_index) == 4);
+    //
+    // Clear dynamic-array
+    assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
+    assert(dynamic_array.head_ptr == NULL);
+    assert(dynamic_array.tail_ptr == NULL);
+}
+
 int main() {
     test_init_and_clear_new_dyn_array();
     test_append_simple_integer_value();
@@ -164,6 +269,7 @@ int main() {
     test_append_static_array();
     test_append_static_array_as_one_element();
     test_append_dyn_arrays_inplace();
+    test_swap_elements_by_indices();
 
     return 0;
 }

@@ -277,9 +277,11 @@ Error_Code append_static_array_elements_to_dyn_array(DynArray* dynamic_array, vo
 }
 
 /*
-Get element of dynamic-array by index.
+Get element-ptr of dynamic-array by index.
+
+Return `NULL` if an error occurs.
 */
-void* get_element_by_index(const DynArray* dynamic_array, const size_t index) {
+DynArrayNode* get_element_ptr_by_index(const DynArray* dynamic_array, const size_t index) {
     if (check_dyn_array(dynamic_array) != NO_ERROR) {
         //
         // Given dynamic-array is invalid
@@ -332,6 +334,19 @@ void* get_element_by_index(const DynArray* dynamic_array, const size_t index) {
         // TODO: called by any edge case?
         return NULL;
     }
+    return current_ptr;
+}
+
+/*
+Get element of dynamic-array by index.
+
+Return `NULL`-ptr if an error occurs.
+*/
+void* get_element_by_index(const DynArray* dynamic_array, const size_t index) {
+    DynArrayNode* current_ptr = get_element_ptr_by_index(dynamic_array, index);
+    if (current_ptr == NULL) {
+        return NULL;
+    }
     return current_ptr->data;
 }
 
@@ -372,6 +387,87 @@ bool append_dyn_arrays_inplace(DynArray* a, const DynArray* b) {
     //
     // NO_ERROR
     return true;
+}
+
+/*
+Swap position of elements by its indices.
+*/
+Error_Code swap_elements_by_indices(DynArray* dynamic_array, const size_t index_a, const size_t index_b) {
+    if (check_dyn_array(dynamic_array) != NO_ERROR) {
+        //
+        // Given dynamic-array is invalid
+        return INVALID_ARRAY_ERROR;
+    }
+    //
+    // Check whether given indices are valid
+    if (index_a >= dynamic_array->length || index_b >= dynamic_array->length) {
+        //
+        // One or both indices are invalid
+        return INVALID_INDEX_ERROR;
+    }
+    //
+    // Early exit when both are equal
+    if (index_a == index_b) {
+        //
+        // Got equal indices. Nothing to swap.
+        return NO_ERROR;
+    }
+    //
+    // Get elements by indices
+    DynArrayNode* element_a_ptr = get_element_ptr_by_index(dynamic_array, index_a);
+    DynArrayNode* element_b_ptr = get_element_ptr_by_index(dynamic_array, index_b);
+    if (element_a_ptr == NULL || element_b_ptr == NULL) {
+        //
+        // Couldn't get element-ptr
+        return NULL_PTR_ERROR;
+    }
+    //
+    // Swap elements by adjusting next_ptr and prev_ptr
+    DynArrayNode* original_a_prev_ptr = element_a_ptr->prev_ptr;
+    DynArrayNode* original_a_next_ptr = element_a_ptr->next_ptr;
+    
+    if (element_a_ptr->prev_ptr != NULL) {
+        element_a_ptr->prev_ptr->next_ptr = element_b_ptr;
+    }
+    if (element_a_ptr->next_ptr != NULL) {
+        element_a_ptr->next_ptr->prev_ptr = element_b_ptr;
+    }
+    element_a_ptr->prev_ptr = element_b_ptr->prev_ptr;
+    element_a_ptr->next_ptr = element_b_ptr->next_ptr;
+
+    if (element_b_ptr->prev_ptr != NULL) {
+        element_b_ptr->prev_ptr->next_ptr = element_a_ptr;
+    }
+    if (element_b_ptr->next_ptr != NULL) {
+        element_b_ptr->next_ptr->prev_ptr = element_a_ptr;
+    }
+    element_b_ptr->prev_ptr = original_a_prev_ptr;
+    element_b_ptr->next_ptr = original_a_next_ptr;
+
+    //
+    // Adjust head_ptr/tail_ptr if required
+    if (element_a_ptr == dynamic_array->head_ptr) {
+        //
+        // element_b_ptr is the new head_ptr
+        dynamic_array->head_ptr = element_b_ptr;
+
+    } else if (element_b_ptr == dynamic_array->head_ptr) {
+        //
+        // element_a_ptr is the new head_ptr
+        dynamic_array->head_ptr = element_a_ptr;
+    }
+    if (element_a_ptr == dynamic_array->tail_ptr) {
+        //
+        // element_b_ptr is the new tail_ptr
+        dynamic_array->tail_ptr = element_b_ptr;
+
+    } else if (element_b_ptr == dynamic_array->tail_ptr) {
+        //
+        // element_a_ptr is the new tail_ptr
+        dynamic_array->tail_ptr = element_a_ptr;
+    }
+
+    return NO_ERROR;
 }
 
 /*
