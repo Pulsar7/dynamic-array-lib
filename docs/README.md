@@ -9,6 +9,7 @@
   - [Append elements to Dynamic-Array](#append-elements-to-dynamic-array)
   - [Get length of Dynamic-Array](#get-length-of-dynamic-array)
   - [Append elements of static-array to Dynamic-Array](#append-elements-of-static-array-to-dynamic-array)
+- [ToDo](#todo)
 
 ## Description
 
@@ -125,3 +126,7 @@ if (clear_dyn_array(&dynamic_array) != NO_ERROR) {
 
 return 0;
 ```
+
+## ToDo
+
+- [ ] Instead of iterating through whole dynamic-array at `get_len`, use `size_t length`-Value of `DynArray`-struct
