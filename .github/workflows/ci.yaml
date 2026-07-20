@@ -1,4 +1,4 @@
-name: Unittests CI
+name: Build and Test
 
 on:
   push:
@@ -8,20 +8,20 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Show compiler version
         run: gcc --version
 
-      - name: Build and run tests
+      - name: Build and Unittests
         run: make test
       
-      - name: Run Valgrind to search for memory leaks
+      - name: Run Memory-tests
         run: |
           sudo apt-get update
           sudo apt-get install -y valgrind
-          valgrind --leak-check=full --error-exitcode=1 ./build/bin/test_runner
+          valgrind --leak-check=full --error-exitcode=1 ./build/bin/test
