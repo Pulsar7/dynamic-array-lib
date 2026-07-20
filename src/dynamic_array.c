@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 /*
 Helper function
@@ -14,6 +15,14 @@ Error_Code check_dyn_array(const DynArray* dynamic_array) {
         //
         // Given pointer is the NULL-pointer
         return NULL_PTR_ERROR;
+    }
+    //
+    if ((dynamic_array->head_ptr == NULL && dynamic_array->length != 0) || 
+        (dynamic_array->head_ptr != NULL && dynamic_array->length == 0)) {
+        //
+        // Dynamic-array is empty, but length-value is not 0
+        // OR dynamic-array is not empty, but length-value is 0
+        return INVALID_ARRAY_ERROR;
     }
 
     return NO_ERROR;
@@ -31,6 +40,7 @@ Error_Code init_dyn_array(DynArray* dynamic_array) {
     
     dynamic_array->head_ptr = NULL;
     dynamic_array->tail_ptr = NULL;
+    dynamic_array->length = 0;
 
     return NO_ERROR;
 }
@@ -89,6 +99,9 @@ Error_Code add_first_element_to_dyn_array(DynArray* dynamic_array, void* data, c
     // Set head-ptr and tail_ptr to first_node
     dynamic_array->head_ptr = first_node;
     dynamic_array->tail_ptr = first_node;
+    //
+    // Set length-counter of dynamic-array to 1
+    dynamic_array->length = 1;
 
     return NO_ERROR;
 }
@@ -146,6 +159,9 @@ Error_Code append_element_to_dyn_array(DynArray* dynamic_array, void* data, cons
     new_node->prev_ptr = dynamic_array->tail_ptr;
     dynamic_array->tail_ptr->next_ptr = new_node;
     dynamic_array->tail_ptr = new_node;
+    //
+    // Increase length-counter of dynamic-array
+    dynamic_array->length++;
 
     return NO_ERROR;
 }
@@ -191,7 +207,7 @@ void* get_first(const DynArray* dynamic_array) {
 }
 
 /*
-Get amount of elements in dynamic-array.
+Get amount of elements in dynamic-array by iterating through whole dynamic-array.
 Boolean indicates whether an error occured or the given dynamic-array is invalid.
 */
 bool get_len(const DynArray* dynamic_array, size_t* len) {
@@ -249,6 +265,65 @@ Error_Code append_static_array_elements_to_dyn_array(DynArray* dynamic_array, vo
     }
 
     return append_elem_error_code;
+}
+
+/*
+Get element of dynamic-array by index.
+*/
+void* get_element_by_index(const DynArray* dynamic_array, const size_t index) {
+    if (check_dyn_array(dynamic_array) != NO_ERROR) {
+        //
+        // Given dynamic-array is invalid
+        return NULL;
+    }
+    //
+    // Check whether given index is valid
+    size_t array_len = dynamic_array->length;
+    if (index >= array_len) {
+        //
+        // Given dynamic-array index is out of bounds
+        return NULL;
+    }
+    //
+    // Check whether dynamic-array is empty
+    if (array_len == 0) {
+        //
+        // Nothing to do since there is no element to get
+        return NULL;
+    }
+    //
+    // Decide whether to iterate dynamic-array from tail or head
+    DynArrayNode* current_ptr = dynamic_array->head_ptr;
+    bool from_head = true;
+    if (array_len >= 10 && (index >= array_len/2)) {
+        current_ptr = dynamic_array->tail_ptr;
+        from_head = false;
+    }
+    //
+    // Iterate through dynamic-array
+    size_t index_counter = 0;
+    if (!from_head) {
+        //
+        // `array_len-1` is allowed, because we already 
+        // checked if the dynamic-array is empty
+        index_counter = array_len-1;
+    }
+    while (current_ptr != NULL && index_counter != index) {
+        if (from_head) {
+            current_ptr = current_ptr->next_ptr;
+            index_counter++;
+        } else {
+            current_ptr = current_ptr->prev_ptr;
+            index_counter--;
+        }
+    }
+    if (current_ptr == NULL) {
+        //
+        // Shouldn't be accessible, since Index is valid
+        // TODO: called by any edge case?
+        return NULL;
+    }
+    return current_ptr->data;
 }
 
 /*

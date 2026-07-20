@@ -39,14 +39,23 @@ Append a series of integer-values to new dynamic-array.
 void append_for_loop_integers() {
     DynArray dynamic_array;
     assert(init_dyn_array(&dynamic_array) == NO_ERROR);
-    for (int value = 0; value < 50; value++) {
+    for (int value = 0; value < 50000; value++) {
         assert(append_element_to_dyn_array(&dynamic_array, (void*)&value, sizeof(int)) == NO_ERROR);
     }
     assert(get_first(&dynamic_array) != get_last(&dynamic_array));
     assert(*(int*)get_first(&dynamic_array) != *(int*)get_last(&dynamic_array));
     size_t array_len;
     assert(get_len(&dynamic_array, &array_len) == true);
-    assert(array_len == 50);
+    assert(array_len == 50000);
+    void* data = get_element_by_index(&dynamic_array, (size_t)25555);
+    assert(data != NULL);
+    assert(*(int*)data == 25555);
+    //
+    // Index out of bounds
+    data = get_element_by_index(&dynamic_array, (size_t)50000);
+    assert(data == NULL);
+    //
+    // Clear dynamic-array
     assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
     assert(dynamic_array.head_ptr == NULL);
     assert(dynamic_array.tail_ptr == NULL);
