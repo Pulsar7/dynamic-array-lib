@@ -30,6 +30,8 @@ Error_Code check_dyn_array(const DynArray* dynamic_array) {
 
 /*
 Initialize a new dynamic-array.
+
+Set `dynamic_array->length` to 0.
 */
 Error_Code init_dyn_array(DynArray* dynamic_array) {
     if (dynamic_array == NULL) {
@@ -65,6 +67,9 @@ DynArrayNode* create_new_dyn_array_node(void* data, const size_t data_size) {
     new_node->next_ptr = NULL;
     new_node->prev_ptr = NULL;
     //
+    // Set data_size-value
+    new_node->data_size = data_size;
+    //
     // Allocate actual data in node
     new_node->data = calloc(1, data_size);
     if (new_node->data == NULL) {
@@ -87,6 +92,8 @@ Helper function
 Add first element to dynamic-array.
 This function assumes, that the given dynamic-array has already been checked with `check_dyn_array` and that the given
 `data-ptr` and `data_size` are also valid.
+
+Set `dynamic_array->length` to 1.
 */
 Error_Code add_first_element_to_dyn_array(DynArray* dynamic_array, void* data, const size_t data_size) {
     DynArrayNode* first_node = create_new_dyn_array_node(data, data_size);
@@ -108,6 +115,8 @@ Error_Code add_first_element_to_dyn_array(DynArray* dynamic_array, void* data, c
 
 /*
 Append element to dynamic-array.
+
+Increases `dynamic_array->length` by 1.
 */
 Error_Code append_element_to_dyn_array(DynArray* dynamic_array, void* data, const size_t data_size) {
     if (check_dyn_array(dynamic_array) != NO_ERROR) {
@@ -324,6 +333,45 @@ void* get_element_by_index(const DynArray* dynamic_array, const size_t index) {
         return NULL;
     }
     return current_ptr->data;
+}
+
+/*
+Append elements of dynamic-array `b` to dynamic-array `a`.
+Uses `append_element_to_dyn_array` under the hood.
+*/
+bool append_dyn_arrays_inplace(DynArray* a, const DynArray* b) {
+    DynArray* dyn_array_a = a;
+    const DynArray* dyn_array_b = b;
+    //
+    // Check both dynamic-arrays
+    if (check_dyn_array(dyn_array_a) != NO_ERROR || check_dyn_array(dyn_array_b) != NO_ERROR) {
+        //
+        // One or both of the given dynamic-arrays are invalid
+        // INVALID_ARRAY_ERROR
+        return false;
+    }
+    if (dyn_array_b->length == 0) {
+        //
+        // Dynamic-array `b` is empty, nothing to append
+        // NO_ERROR
+        return true;
+    }
+    //
+    // Iterate through dynamic-array `b`
+    Error_Code append_elem_error_code = NO_ERROR;
+    DynArrayNode* current_b_ptr = dyn_array_b->head_ptr;
+    while (current_b_ptr != NULL) {
+        append_elem_error_code = append_element_to_dyn_array(dyn_array_a, current_b_ptr->data, current_b_ptr->data_size);
+        if (append_elem_error_code != NO_ERROR) {
+            //
+            // Appending element went wrong
+            return false;
+        }
+        current_b_ptr = current_b_ptr->next_ptr;
+    }
+    //
+    // NO_ERROR
+    return true;
 }
 
 /*
