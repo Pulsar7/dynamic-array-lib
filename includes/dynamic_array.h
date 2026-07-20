@@ -1,6 +1,8 @@
 #ifndef DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H
 #define DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H
 
+#include <stddef.h>
+
 /*
 Define enums, structs
 */
@@ -9,7 +11,6 @@ typedef enum Error_Code {
     INVALID_ARRAY_ERROR=1,
     NULL_PTR_ERROR=2,
     INVALID_DATA_SIZE=3
-
 } Error_Code;
 
 typedef struct DynArrayNode {
@@ -31,6 +32,8 @@ Functions
 // Initialize new dynamic array
 Error_Code init_dyn_array(DynArray* dynamic_array);
 Error_Code append_element_to_dyn_array(DynArray* dynamic_array, void* data, size_t data_size);
+void* get_last(DynArray* dynamic_array);
+void* get_first(DynArray* dynamic_array);
 Error_Code clear_dyn_array(DynArray* dynamic_array);
 
 #endif // DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H

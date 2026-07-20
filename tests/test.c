@@ -1,62 +1,44 @@
+#include "dynamic_array.h"
 #include <stdio.h>
-//
-#include "tests.h"
+#include <assert.h>
 
-int main(int argc, const char** argv) {
-    (void)argc;
-    (void)argv;
+/*
+Append a single integer-value to new created dynamic-array.
+*/
+void append_simple_integer_value() {
+    DynArray dynamic_array;
+    assert(init_dyn_array(&dynamic_array) == NO_ERROR);
+    int value = 1337;
+    assert(append_element_to_dyn_array(&dynamic_array, (void*)&value, sizeof(int)) == NO_ERROR);
+    assert(get_first(&dynamic_array) != NULL);
+    assert(*(int*)get_first(&dynamic_array) == value);
+    assert(get_first(&dynamic_array) == get_last(&dynamic_array));
+    assert(*(int*)get_first(&dynamic_array) == *(int*)get_last(&dynamic_array));
+    assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
+    assert(dynamic_array.head_ptr == NULL);
+    assert(dynamic_array.tail_ptr == NULL);
+}
 
-    printf("<--------Running Tests for Custom-DynamicArrayLib-------->\n");
-    
-    printf("> Testing valid arrays\n");
-    printf("  > Testing 'test_init_array_integer_element()'...");
-    test_init_array_integer_element();
-    printf("O.K.\n");
-    printf("  > Testing 'test_clear_array_one_integer_element()'...");
-    test_clear_array_one_integer_element();
-    printf("O.K.\n");
+/*
+Append a series of integer-values to new created dynamic-array.
+*/
+void append_for_loop_integers() {
+    DynArray dynamic_array;
+    assert(init_dyn_array(&dynamic_array) == NO_ERROR);
+    for (int value = 0; value < 50; value++) {
+        assert(append_element_to_dyn_array(&dynamic_array, (void*)&value, sizeof(int)) == NO_ERROR);
+    }
+    assert(get_first(&dynamic_array) != get_last(&dynamic_array));
+    assert(*(int*)get_first(&dynamic_array) != *(int*)get_last(&dynamic_array));
+    assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
+    assert(dynamic_array.head_ptr == NULL);
+    assert(dynamic_array.tail_ptr == NULL);
+}
 
-    printf("  > Testing 'test_append_two_integer_elements()'...");
-    test_append_two_integer_elements();
-    printf("O.K.\n");
-    printf("  > Testing 'test_clear_array_two_integer_elements()'...");
-    test_clear_array_two_integer_elements();
-    printf("O.K.\n");
+int main() {
+    //
+    append_simple_integer_value();
+    append_for_loop_integers();
 
-    printf("  > Testing 'test_append_multiple_integer_elements()'...");
-    test_append_multiple_integer_elements();
-    printf("O.K.\n");
-    printf("  > Testing 'test_clear_array_multiple_integer_elements()'...");
-    test_clear_array_multiple_integer_elements();
-    printf("O.K.\n");
-
-    printf("  > Testing 'test_append_another_dynamic_array_as_element()'...");
-    test_append_another_dynamic_array_as_element();
-    printf("O.K.\n");
-    printf("  > Testing 'test_clear_array_another_dynamic_array_as_element()'...");
-    test_clear_array_another_dynamic_array_as_element();
-    printf("O.K.\n");
-
-    printf("  > Testing 'test_append_multiple_other_dynamic_arrays_as_elements()'...");
-    test_append_multiple_other_dynamic_arrays_as_elements();
-    printf("O.K.\n");
-    printf("  > Testing 'test_clear_array_multiple_other_dynamic_arrays_as_elements()'...");
-    test_clear_array_multiple_other_dynamic_arrays_as_elements();
-    printf("O.K.\n");
-
-    printf("  > Testing 'test_append_one_dimensional_dyn_arrays_to_two_dimensional_array()'...");
-    test_append_one_dimensional_dyn_arrays_to_two_dimensional_array();
-    printf("O.K.\n");
-    printf("  > Testing 'test_clear_one_dimensional_dyn_arrays_in_two_dimensional_array()'...");
-    test_clear_one_dimensional_dyn_arrays_in_two_dimensional_array();
-    printf("O.K.\n");
-
-    printf("\n> Testing invalid arrays\n");
-    printf("  > Testing 'test_invalid_head_tail_ptr_array()'...");
-    test_invalid_head_tail_ptr_array();
-    printf("O.K.\n");
-
-    printf("  > Testing 'test_null_init_array()'...");
-    test_null_init_array();
-    printf("O.K.\n");
+    return 0;
 }

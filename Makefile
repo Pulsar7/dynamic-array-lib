@@ -3,7 +3,7 @@
 # **************************************************************************** #
 
 NAME        := dynamic-array-lib.a
-TEST_BIN    := test_runner
+TEST_BIN    := test
 
 CC          := gcc
 AR          := ar
