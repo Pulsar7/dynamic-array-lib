@@ -1,1 +1,4 @@
 build/
+#
+# Ignore IDE-specific folders/files
+.vscode/

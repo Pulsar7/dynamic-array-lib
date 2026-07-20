@@ -1,27 +1,36 @@
-#ifndef CUSTOM_DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H
-#define CUSTOM_DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H
+#ifndef DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H
+#define DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H
 
-#include <stdlib.h>
-//
-#include "constants.h"
+/*
+Define enums, structs
+*/
+typedef enum Error_Code {
+    NO_ERROR=0,
+    INVALID_ARRAY_ERROR=1,
+    NULL_PTR_ERROR=2,
+    INVALID_DATA_SIZE=3
 
-typedef struct DynamicArrayNode {
+} Error_Code;
+
+typedef struct DynArrayNode {
     void* data;
     size_t data_size;
-    struct DynamicArrayNode* next_ptr;
-    struct DynamicArrayNode* prev_ptr;
-} DynamicArrayNode;
+    struct DynArrayNode* next_ptr;
+    struct DynArrayNode* prev_ptr;
+} DynArrayNode;
 
-typedef struct DynamicArray {
-    DynamicArrayNode* head_ptr;
-    DynamicArrayNode* tail_ptr;
-} DynamicArray;
+typedef struct DynArray {
+    struct DynArrayNode* head_ptr;
+    struct DynArrayNode* tail_ptr;
+} DynArray;
 
 /*
 Functions
 */
-ERROR_CODE init_array(DynamicArray* array);
-ERROR_CODE append_element(DynamicArray* array, size_t element_size, void* element);
-ERROR_CODE clear_array(DynamicArray* array);
+//
+// Initialize new dynamic array
+Error_Code init_dyn_array(DynArray* dynamic_array);
+Error_Code append_element_to_dyn_array(DynArray* dynamic_array, void* data, size_t data_size);
+Error_Code clear_dyn_array(DynArray* dynamic_array);
 
-#endif // CUSTOM_DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H
+#endif // DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H

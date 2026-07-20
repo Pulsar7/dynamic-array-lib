@@ -1,160 +1,186 @@
+#include "dynamic_array.h"
 #include <stdlib.h>
 #include <string.h>
-//
-#include "dynamic_array.h"
-#include "constants.h"
 
 /*
-Initialize head-pointer and tail-pointer of array.
-
-Returns `ERROR_CODE`:
-    - `NOERROR`: Array has been successfully initialized.
-    - `NULL_PTR_ERROR`: Given array is NULL
+Helper function
+Check whether provided DynArray-Pointer is pointing to a valid Dynamic-Array.
 */
-ERROR_CODE init_array(DynamicArray* array) {
-    if (array == NULL) {
+Error_Code check_dyn_array(DynArray* dynamic_array) {
+    if (dynamic_array == NULL || (dynamic_array->head_ptr == NULL && dynamic_array->tail_ptr != NULL)
+        || (dynamic_array->head_ptr != NULL && dynamic_array->tail_ptr == NULL)) {
+        //
+        // Given pointer is the NULL-pointer
         return NULL_PTR_ERROR;
     }
-
-    array->head_ptr = NULL;
-    array->tail_ptr = NULL;
-
-    return NOERROR;
 }
 
 /*
-Helper function, to check if the given dynamic-array is invalid.
-
-Returns `ERROR_CODE`:
-    - `NOERROR`: Element has been sucessfully appended to the dynamic-array
-    - `INVALID_ARRAY_ERROR`: Given dynamic-array is invalid (missing or invalid `head_ptr` and `tail_ptr`)
+Initialize a new dynamic-array.
 */
-ERROR_CODE if_invalid_dynamic_array(DynamicArray* array) {
-    if (array == NULL) {
-        return INVALID_ARRAY_ERROR;
-    } else if ((array->head_ptr == NULL && array->tail_ptr != NULL) || (
-        array->head_ptr != NULL && array->tail_ptr == NULL
-    )) {
-        return INVALID_ARRAY_ERROR;
-    }
-
-    // Check if there is at least one element in the array
-    // Further checks aren't needed
-    if (array->head_ptr == NULL || array->head_ptr == array->tail_ptr) {
-        return NOERROR;
-    }
-
-    // More than one element is already in the array
-    //
-    // Iterating through the whole list is 
-    // probably not the most efficient way
-    DynamicArrayNode* current_ptr = array->head_ptr;
-    while (current_ptr != NULL) {
-        if (current_ptr->data == NULL) { 
-            return INVALID_ARRAY_ERROR;
-        }
-
-        // When the next-pointer after the current is NULL, the current-pointer
-        // has to be the tail-pointer.
-        if (current_ptr->next_ptr == NULL && current_ptr != array->tail_ptr) {
-            return INVALID_ARRAY_ERROR;
-        }
-
-        current_ptr = current_ptr->next_ptr;
-    }
-
-    return NOERROR;
-}
-
-/*
-- Append element to dynamic-array.
-- Create dynamic-array if `head_ptr` and `tail_ptr` is `NULL` and add element as first and only element.
-
-Returns `ERROR_CODE`:
-    - `NOERROR`: Element has been sucessfully appended to the dynamic-array
-    - `INVALID_ARRAY_ERROR`: Given dynamic-array is invalid (missing or invalid `head_ptr` and `tail_ptr`)
-    - `NULL_PTR_ERROR`: Space allocation error occured
-*/
-ERROR_CODE append_element(DynamicArray* array, size_t element_size, void* element) {
-    ERROR_CODE is_array_invalid = if_invalid_dynamic_array(array);
-    if (is_array_invalid != NOERROR) {
-        // Given array is invalid.
-        return is_array_invalid;
-    }
-
-    DynamicArrayNode* current_ptr = (DynamicArrayNode*) calloc(1, sizeof(DynamicArrayNode));
-    if (current_ptr == NULL) {
-        // Space allocation error
+Error_Code init_dyn_array(DynArray* dynamic_array) {
+    if (dynamic_array == NULL) {
+        //
+        // Given pointer is the NULL-pointer
         return NULL_PTR_ERROR;
     }
-
-    current_ptr->data = calloc(1, element_size);
-    if (current_ptr->data == NULL) {
-        // Space allocation error
-        free(current_ptr);
-        return NULL_PTR_ERROR;
-    }
-
-    // Copy data
-    memcpy(current_ptr->data, element, element_size);
-    current_ptr->data_size = element_size;
-
-    // current-pointer is the new tail-pointer
-    current_ptr->next_ptr = NULL;
-
-    if (array->head_ptr == NULL) {
-        // First element in array
-        array->head_ptr = current_ptr;
-        current_ptr->prev_ptr = NULL;
-        
-    } else if (array->head_ptr == array->tail_ptr) {
-        // Second element in array
-        array->head_ptr->next_ptr = current_ptr;
-        current_ptr->next_ptr = NULL;
-        current_ptr->prev_ptr = array->head_ptr;
     
-    } else {
-        // At least two elements in array
-        array->tail_ptr->next_ptr = current_ptr;
-        current_ptr->prev_ptr = array->tail_ptr;
-    }
+    dynamic_array->head_ptr = NULL;
+    dynamic_array->tail_ptr = NULL;
 
-    array->tail_ptr = current_ptr;
-
-    return NOERROR;
+    return NO_ERROR;
 }
 
 /*
-Free all elements in the given dynamic-array.
-
-Returns `ERROR_CODE`:
-    - `NOERROR`: Element has been sucessfully appended to the dynamic-array
-    - `INVALID_ARRAY_ERROR`: Given dynamic-array is invalid (missing or invalid `head_ptr` and `tail_ptr`)
+(Helper) Helper function
+Create node and copy memory data.
+This function assumes, that the given dynamic-array has already been checked with `check_dyn_array` and that the given
+`data-ptr` and `data_size` are also valid.
 */
-ERROR_CODE clear_array(DynamicArray* array) {
-    ERROR_CODE is_array_invalid = if_invalid_dynamic_array(array);
-    if (is_array_invalid != NOERROR) {
-        // Given array is invalid.
-        return is_array_invalid;
+DynArrayNode* create_new_dyn_array_node(DynArray* dynamic_array, void* data, size_t data_size) {
+    //
+    // Allocate new `DynArrayNode`
+    DynArrayNode* new_node = (DynArrayNode*) calloc(1, sizeof(DynArrayNode));
+    if (new_node == NULL) {
+        //
+        // Allocation failed
+        // NULL_PTR_ERROR
+        return NULL;
     }
+    //
+    // Set next_ptr and prev_ptr to NULL
+    new_node->next_ptr = NULL;
+    new_node->prev_ptr = NULL;
+    //
+    // Allocate actual data in node
+    new_node->data = calloc(1, data_size);
+    if (new_node->data == NULL) {
+        //
+        // Allocation failed
+        // NULL_PTR_ERROR
+        free(new_node);
+        return NULL;
+    }
+    //
+    // Copy data
+    memcpy(new_node->data, data, data_size);
+    //
+    // NO_ERROR
+    return new_node;
+}
 
-    DynamicArrayNode* current_ptr = array->head_ptr;
+/*
+Helper function
+Add first element to dynamic-array.
+This function assumes, that the given dynamic-array has already been checked with `check_dyn_array` and that the given
+`data-ptr` and `data_size` are also valid.
+*/
+Error_Code add_first_element_to_dyn_array(DynArray* dynamic_array, void* data, size_t data_size) {
+    DynArrayNode* first_node = create_new_dyn_array_node(dynamic_array, data, data_size);
+    if (first_node == NULL) {
+        //
+        // Failed to create new node
+        return NULL_PTR_ERROR;
+    }
+    //
+    // Set head-ptr and tail_ptr to first_node
+    dynamic_array->head_ptr = first_node;
+    dynamic_array->tail_ptr = first_node;
 
+    return NO_ERROR;
+}
+
+/*
+Append element to dynamic-array.
+*/
+Error_Code append_element_to_dyn_array(DynArray* dynamic_array, void* data, size_t data_size) {
+    if (check_dyn_array(dynamic_array) != NO_ERROR) {
+        //
+        // Given dynamic-array is invalid
+        return INVALID_ARRAY_ERROR;
+    }
+    //
+    // Check whether given data-size is valid
+    if (data_size == 0) {
+        //
+        // data_size shouldn't be zero
+        return INVALID_DATA_SIZE;
+    }
+    //
+    // Check whether given data-pointer is probably valid
+    if (data == NULL) {
+        //
+        // data-pointer shouldn't be the NULL-pointer
+        return NULL_PTR_ERROR;
+    }
+    //
+    // Check size of array
+    if (dynamic_array->head_ptr == dynamic_array->tail_ptr) {
+        //
+        // Array has one element or none
+        if (dynamic_array->head_ptr == NULL) {
+            //
+            // Because of the 'check_dyn_array'-func we can now presuppose 
+            // that the tail_ptr is also the NULL-ptr
+            // Array is empty -> Given data is first element
+            return add_first_element_to_dyn_array(dynamic_array, data, data_size);
+        }
+        //
+        // Given array has one element
+        // We can proceed with normal 'append'-function
+    }
+    //
+    // Create new node
+    DynArrayNode* new_node = create_new_dyn_array_node(dynamic_array, data, data_size);
+    if (new_node == NULL) {
+        //
+        // Failed to create new node
+        return NULL_PTR_ERROR;
+    }
+    //
+    // Append new_node to array
+    // Leave `new_node->next_ptr` as NULL
+    new_node->prev_ptr = dynamic_array->tail_ptr;
+    dynamic_array->tail_ptr->next_ptr = new_node;
+    dynamic_array->tail_ptr = new_node;
+
+    return NO_ERROR;
+}
+
+/*
+Delete all elements on an dynamic-array.
+*/
+Error_Code clear_dyn_array(DynArray* dynamic_array) {
+    if (check_dyn_array(dynamic_array) != NO_ERROR) {
+        //
+        // Given dynamic-array is invalid
+        return INVALID_ARRAY_ERROR;
+    }
+    DynArrayNode* current_ptr = dynamic_array->head_ptr;
+    //
+    // Check if array is empty
+    if (current_ptr == NULL) {
+        //
+        // Array is empty; nothing to deallocate
+        return NO_ERROR;
+    }
     while (current_ptr->next_ptr != NULL) {
         current_ptr = current_ptr->next_ptr;
+        //
+        // First deallocate data
         free(current_ptr->prev_ptr->data);
+        //
+        // Then deallocate node
         free(current_ptr->prev_ptr);
     }
+    //
+    // Deallocate data of head-ptr
+    free(dynamic_array->head_ptr->data);
+    free(dynamic_array->head_ptr);
+    //
+    // Re-initialize array
+    dynamic_array->head_ptr = NULL;
+    dynamic_array->tail_ptr = NULL;
 
-    if (current_ptr != array->tail_ptr) {
-        return INVALID_ARRAY_ERROR;
-    }
-
-    free(current_ptr->data);
-    free(current_ptr);
-
-    array->head_ptr = NULL;
-    array->tail_ptr = NULL;
-
-    return NOERROR;
+    return NO_ERROR;
 }
