@@ -9,7 +9,7 @@
   - [Get length of Dynamic-Array](#get-length-of-dynamic-array)
   - [Append elements of static-array to Dynamic-Array](#append-elements-of-static-array-to-dynamic-array)
   - [Get element of Dynamic-array by index](#get-element-of-dynamic-array-by-index)
-  - [Append two Dynamica-Arrays inplace](#append-two-dynamica-arrays-inplace)
+  - [Append two Dynamic-Arrays inplace](#append-two-dynamic-arrays-inplace)
 - [ToDo](#todo)
 
 ## Description
@@ -164,7 +164,7 @@ if (clear_dyn_array(&dynamic_array) != NO_ERROR) {
 return 0;
 ```
 
-### Append two Dynamica-Arrays inplace
+### Append two Dynamic-Arrays inplace
 
 ```C
 //
