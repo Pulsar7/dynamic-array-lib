@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
-#include <stdio.h>
+#include <stdbool.h>
 
 /*
 Helper function
 Check whether provided DynArray-Pointer is pointing to a valid Dynamic-Array.
 */
-Error_Code check_dyn_array(DynArray* dynamic_array) {
+Error_Code check_dyn_array(const DynArray* dynamic_array) {
     if (dynamic_array == NULL || (dynamic_array->head_ptr == NULL && dynamic_array->tail_ptr != NULL)
         || (dynamic_array->head_ptr != NULL && dynamic_array->tail_ptr == NULL)) {
         //
@@ -154,7 +154,7 @@ Error_Code append_element_to_dyn_array(DynArray* dynamic_array, void* data, size
 Get and Return last element of dynamic-array.
 Returns 'NULL`-ptr if empty or an error occured.
 */
-void* get_last(DynArray* dynamic_array) {
+void* get_last(const DynArray* dynamic_array) {
     if (check_dyn_array(dynamic_array) != NO_ERROR) {
         //
         // Given dynamic-array is invalid
@@ -174,7 +174,7 @@ void* get_last(DynArray* dynamic_array) {
 Get and Return first element of dynamic-array.
 Returns 'NULL`-ptr if empty or an error occured.
 */
-void* get_first(DynArray* dynamic_array) {
+void* get_first(const DynArray* dynamic_array) {
     if (check_dyn_array(dynamic_array) != NO_ERROR) {
         //
         // Given dynamic-array is invalid
@@ -188,6 +188,31 @@ void* get_first(DynArray* dynamic_array) {
     }
     //
     return dynamic_array->head_ptr->data;
+}
+
+/*
+Get amount of elements in dynamic-array.
+Boolean indicates whether an error occured or the given dynamic-array is invalid.
+*/
+bool get_len(const DynArray* dynamic_array, size_t* len) {
+    if (check_dyn_array(dynamic_array) != NO_ERROR) {
+        //
+        // Given dynamic-array is invalid
+        return false;
+    }
+    //
+    if (len == NULL) {
+        //
+        // Given len-ptr is the NULL-ptr
+        return false;
+    }
+    DynArrayNode* current_ptr = dynamic_array->head_ptr;
+    *len = 0;
+    while (current_ptr != NULL) {
+        (*len)++;
+        current_ptr = current_ptr->next_ptr;
+    }
+    return true;
 }
 
 /*

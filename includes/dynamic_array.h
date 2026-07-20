@@ -2,6 +2,7 @@
 #define DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H
 
 #include <stddef.h>
+#include <stdbool.h>
 
 /*
 Define enums, structs
@@ -32,8 +33,9 @@ Functions
 // Initialize new dynamic array
 Error_Code init_dyn_array(DynArray* dynamic_array);
 Error_Code append_element_to_dyn_array(DynArray* dynamic_array, void* data, size_t data_size);
-void* get_last(DynArray* dynamic_array);
-void* get_first(DynArray* dynamic_array);
+void* get_last(const DynArray* dynamic_array);
+void* get_first(const DynArray* dynamic_array);
+bool get_len(const DynArray* dynamic_array, size_t* len);
 Error_Code clear_dyn_array(DynArray* dynamic_array);
 
 #endif // DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H

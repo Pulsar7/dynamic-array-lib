@@ -1,6 +1,7 @@
 #include "dynamic_array.h"
 #include <stdio.h>
 #include <assert.h>
+#include <stdbool.h>
 
 /*
 Append a single integer-value to new created dynamic-array.
@@ -14,6 +15,9 @@ void append_simple_integer_value() {
     assert(*(int*)get_first(&dynamic_array) == value);
     assert(get_first(&dynamic_array) == get_last(&dynamic_array));
     assert(*(int*)get_first(&dynamic_array) == *(int*)get_last(&dynamic_array));
+    size_t array_len;
+    assert(get_len(&dynamic_array, &array_len) == true);
+    assert(array_len == 1);
     assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
     assert(dynamic_array.head_ptr == NULL);
     assert(dynamic_array.tail_ptr == NULL);
@@ -30,6 +34,9 @@ void append_for_loop_integers() {
     }
     assert(get_first(&dynamic_array) != get_last(&dynamic_array));
     assert(*(int*)get_first(&dynamic_array) != *(int*)get_last(&dynamic_array));
+    size_t array_len;
+    assert(get_len(&dynamic_array, &array_len) == true);
+    assert(array_len == 50);
     assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
     assert(dynamic_array.head_ptr == NULL);
     assert(dynamic_array.tail_ptr == NULL);
