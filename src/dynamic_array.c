@@ -375,7 +375,7 @@ bool append_dyn_arrays_inplace(DynArray* a, const DynArray* b) {
 }
 
 /*
-Delete all elements on an dynamic-array.
+Deallocate space of all elments in a dynamic-array.
 */
 Error_Code clear_dyn_array(DynArray* dynamic_array) {
     if (check_dyn_array(dynamic_array) != NO_ERROR) {
