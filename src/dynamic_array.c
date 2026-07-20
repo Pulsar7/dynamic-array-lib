@@ -40,7 +40,7 @@ Error_Code init_dyn_array(DynArray* dynamic_array) {
 Create node and copy memory data.
 This function assumes, that the given `data-ptr` and `data_size` are valid.
 */
-DynArrayNode* create_new_dyn_array_node(void* data, size_t data_size) {
+DynArrayNode* create_new_dyn_array_node(void* data, const size_t data_size) {
     //
     // Allocate new `DynArrayNode`
     DynArrayNode* new_node = (DynArrayNode*) calloc(1, sizeof(DynArrayNode));
@@ -78,7 +78,7 @@ Add first element to dynamic-array.
 This function assumes, that the given dynamic-array has already been checked with `check_dyn_array` and that the given
 `data-ptr` and `data_size` are also valid.
 */
-Error_Code add_first_element_to_dyn_array(DynArray* dynamic_array, void* data, size_t data_size) {
+Error_Code add_first_element_to_dyn_array(DynArray* dynamic_array, void* data, const size_t data_size) {
     DynArrayNode* first_node = create_new_dyn_array_node(data, data_size);
     if (first_node == NULL) {
         //
@@ -96,7 +96,7 @@ Error_Code add_first_element_to_dyn_array(DynArray* dynamic_array, void* data, s
 /*
 Append element to dynamic-array.
 */
-Error_Code append_element_to_dyn_array(DynArray* dynamic_array, void* data, size_t data_size) {
+Error_Code append_element_to_dyn_array(DynArray* dynamic_array, void* data, const size_t data_size) {
     if (check_dyn_array(dynamic_array) != NO_ERROR) {
         //
         // Given dynamic-array is invalid
@@ -213,6 +213,42 @@ bool get_len(const DynArray* dynamic_array, size_t* len) {
         current_ptr = current_ptr->next_ptr;
     }
     return true;
+}
+
+/*
+Copy the array’s elements individually into the dynamic-array.
+Uses `append_element_to_dyn_array` under the hood.
+*/
+Error_Code append_static_array_elements_to_dyn_array(DynArray* dynamic_array, void* static_array, const size_t static_array_elem_size, const size_t static_array_len) {
+    if (check_dyn_array(dynamic_array) != NO_ERROR) {
+        //
+        // Given dynamic-array is invalid
+        return INVALID_ARRAY_ERROR;
+    }
+    //
+    // Check whether given static_array_element-size is valid
+    if (static_array_elem_size == 0 || static_array_len == 0) {
+        //
+        // data_size shouldn't be zero
+        return INVALID_DATA_SIZE;
+    }
+    //
+    // Check whether given static_array-pointer is probably valid
+    if (static_array == NULL) {
+        //
+        // data-pointer shouldn't be the NULL-pointer
+        return NULL_PTR_ERROR;
+    }
+    //
+    Error_Code append_elem_error_code = NO_ERROR;
+    for (size_t elem_counter = 0; elem_counter < static_array_len; elem_counter++) {
+        append_elem_error_code = append_element_to_dyn_array(dynamic_array, static_array+(elem_counter*static_array_elem_size), static_array_elem_size);
+        if (append_elem_error_code != NO_ERROR) {
+            break;
+        }
+    }
+
+    return append_elem_error_code;
 }
 
 /*

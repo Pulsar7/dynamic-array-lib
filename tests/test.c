@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <string.h>
 
 /*
-Append a single integer-value to new created dynamic-array.
+Append a single integer-value to new dynamic-array.
 */
 void append_simple_integer_value() {
     DynArray dynamic_array;
@@ -24,7 +25,7 @@ void append_simple_integer_value() {
 }
 
 /*
-Append a series of integer-values to new created dynamic-array.
+Append a series of integer-values to new dynamic-array.
 */
 void append_for_loop_integers() {
     DynArray dynamic_array;
@@ -42,10 +43,38 @@ void append_for_loop_integers() {
     assert(dynamic_array.tail_ptr == NULL);
 }
 
+/*
+Append elements of static-array to new dynamic-array.
+*/
+void append_static_array() {
+    DynArray dynamic_array;
+    assert(init_dyn_array(&dynamic_array) == NO_ERROR);
+    int static_int_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    assert(append_static_array_elements_to_dyn_array(&dynamic_array, static_int_array, sizeof(int), (size_t)9) == NO_ERROR);
+    assert(get_first(&dynamic_array) != get_last(&dynamic_array));
+    assert(*(int*)get_first(&dynamic_array) != *(int*)get_last(&dynamic_array));
+    size_t array_len;
+    assert(get_len(&dynamic_array, &array_len) == true);
+    assert(array_len == 9);
+
+    char* static_char_array = "HeLlO WoRlD";
+    size_t static_char_array_len = strlen(static_char_array);
+    assert(append_static_array_elements_to_dyn_array(&dynamic_array, static_char_array, sizeof(char), static_char_array_len) == NO_ERROR);
+    assert(get_first(&dynamic_array) != get_last(&dynamic_array));
+    assert(*(char*)get_first(&dynamic_array) != *(char*)get_last(&dynamic_array));
+    assert(get_len(&dynamic_array, &array_len) == true);
+    assert(array_len == 9+static_char_array_len);
+    assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
+    
+    assert(dynamic_array.head_ptr == NULL);
+    assert(dynamic_array.tail_ptr == NULL);
+}
+
 int main() {
     //
     append_simple_integer_value();
     append_for_loop_integers();
+    append_static_array();
 
     return 0;
 }
