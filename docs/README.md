@@ -9,14 +9,13 @@
   - [Append elements to Dynamic-Array](#append-elements-to-dynamic-array)
   - [Get length of Dynamic-Array](#get-length-of-dynamic-array)
   - [Append elements of static-array to Dynamic-Array](#append-elements-of-static-array-to-dynamic-array)
+  - [Get element of Dynamic-array by index](#get-element-of-dynamic-array-by-index)
 - [ToDo](#todo)
 
 ## Description
 
 > [!IMPORTANT]
 > For educational purposes only. Please don't use this library in a real-world implementation.
-
-
 
 ## Usage
 
@@ -117,6 +116,30 @@ if (append_static_array_elements_to_dyn_array(&dynamic_array, static_int_array, 
 char* static_char_array = "HeLlO WoRlD";
 size_t static_char_array_len = strlen(static_char_array);
 if (append_static_array_elements_to_dyn_array(&dynamic_array, static_char_array, sizeof(char), static_char_array_len) != NO_ERROR) {
+    printf("Couldn't append static-string to dynamic-array\n");
+}
+
+if (clear_dyn_array(&dynamic_array) != NO_ERROR) {
+    return 1;
+}
+
+return 0;
+```
+
+### Get element of Dynamic-array by index
+
+```C
+DynArray dynamic_array;
+if (init_dyn_array(&dynamic_array) != NO_ERROR) {
+    return 1;
+}
+
+char* static_char_array = "HeLlO WoRlD";
+size_t static_char_array_len = strlen(static_char_array);
+size_t data_size = sizeof(char)*((size_t)static_char_array_len);
+if (append_element_to_dyn_array(&dynamic_array, (void*)static_char_array, data_size) == NO_ERROR) {
+    printf("%s\n", (char*)get_element_by_index(&dynamic_array, 0));
+} else {
     printf("Couldn't append static-string to dynamic-array\n");
 }
 
