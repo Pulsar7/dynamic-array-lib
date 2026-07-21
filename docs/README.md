@@ -10,6 +10,7 @@
   - [Append elements of static-array to Dynamic-Array](#append-elements-of-static-array-to-dynamic-array)
   - [Get element of Dynamic-array by index](#get-element-of-dynamic-array-by-index)
   - [Append two Dynamic-Arrays inplace](#append-two-dynamic-arrays-inplace)
+  - [Swap position of elements in Dynamic-Array](#swap-position-of-elements-in-dynamic-array)
 - [ToDo](#todo)
 
 ## Description
@@ -189,6 +190,38 @@ if (append_element_to_dyn_array(&dynamic_array_b, (void*)static_char_array, size
 //
 // Clear dynamic-arrays
 if (clear_dyn_array(&dynamic_array_a) != NO_ERROR || clear_dyn_array(&dynamic_array_b) != NO_ERROR) {
+    return 1;
+}
+
+return 0;
+```
+
+### Swap position of elements in Dynamic-Array
+
+```C 
+//
+// Initialize dynamic-array
+DynArray dynamic_array_a, dynamic_array_b;
+if (init_dyn_array(&dynamic_array_a) == NO_ERROR) {
+    //
+    // Failed to initialize dynamic-array
+    return 1;
+}
+//
+// Append static-integer-array to dynamic-array
+int static_int_array[] = {5, 19, 9, 1, 2, 8, 3, 7, 6, 10, 11, 13, 14, 12, 16, 17, 15, 18, 20, 4};
+size_t static_array_len = sizeof(static_int_array)/sizeof(int);
+if (append_static_array_elements_to_dyn_array(&dynamic_array, (void*)static_int_array, sizeof(int), static_array_len) == NO_ERROR) {
+    if (swap_elements_by_indices(&dynamic_array, 1, 0) == NO_ERROR) {
+        for (int i = 0; (size_t)i < dynamic_array.length; i++) {
+            printf("%d; ", *(int*)get_element_by_index(&dynamic_array, i));
+        }
+        printf("\n");
+    }   
+}
+//
+// Clear dynamic-array
+if (clear_dyn_array(&dynamic_array_a) != NO_ERROR) {
     return 1;
 }
 
