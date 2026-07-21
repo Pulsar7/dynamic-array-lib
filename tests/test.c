@@ -1,4 +1,5 @@
 #include "dynamic_array.h"
+#include "sort_algorithms.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
@@ -262,6 +263,40 @@ void test_swap_elements_by_indices() {
     assert(dynamic_array.tail_ptr == NULL);
 }
 
+//
+
+/*
+Test sort-algorithms-function for integers bubble-sort inplace.
+*/
+void test_integers_bubble_sort_inplace() {
+    DynArray dynamic_array;
+    assert(init_dyn_array(&dynamic_array) == NO_ERROR);
+    //
+    // Append static-integer-array to dynamic-array
+    int static_int_array[] = {5, 4, 9, 1, 2, 8, 3, 7, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 19};
+    assert(append_static_array_elements_to_dyn_array(&dynamic_array, (void*)static_int_array, sizeof(int), sizeof(static_int_array)/sizeof(int)) == NO_ERROR);
+    assert(swap_elements_by_indices(&dynamic_array, 1, 0) == NO_ERROR);
+    for (size_t i = 0; i < dynamic_array.length; i++) {
+        printf("%d\n",*(int*)get_element_by_index(&dynamic_array, i));
+    }
+    assert(*(int*)get_element_by_index(&dynamic_array, 0) == 4);
+    assert(*(int*)get_element_by_index(&dynamic_array, 1) == 5);
+    assert(*(int*)get_element_by_index(&dynamic_array, 2) == 9);
+    assert(*(int*)get_element_by_index(&dynamic_array, 17) == 18);
+    /*
+    //
+    // Bubble-Sort array
+    SortResult sort_result = sort_dyn_array_integers_inplace(&dynamic_array, SORT_ALG_BUBBLE);
+    printf("sort_result.error_code=%d; sort_result.runtime_ms=%f\n", sort_result.error_code, sort_result.runtime_ms);
+    assert(sort_result.error_code == NO_ERROR);
+    */
+    //
+    // Clear dynamic-array
+    assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
+    assert(dynamic_array.head_ptr == NULL);
+    assert(dynamic_array.tail_ptr == NULL);
+}
+
 int main() {
     test_init_and_clear_new_dyn_array();
     test_append_simple_integer_value();
@@ -270,6 +305,10 @@ int main() {
     test_append_static_array_as_one_element();
     test_append_dyn_arrays_inplace();
     test_swap_elements_by_indices();
+    
+    //
+
+    test_integers_bubble_sort_inplace();
 
     return 0;
 }

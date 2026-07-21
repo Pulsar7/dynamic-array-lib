@@ -425,24 +425,80 @@ Error_Code swap_elements_by_indices(DynArray* dynamic_array, const size_t index_
     // Swap elements by adjusting next_ptr and prev_ptr
     DynArrayNode* original_a_prev_ptr = element_a_ptr->prev_ptr;
     DynArrayNode* original_a_next_ptr = element_a_ptr->next_ptr;
+    DynArrayNode* original_b_prev_ptr = element_b_ptr->prev_ptr;
+    DynArrayNode* original_b_next_ptr = element_b_ptr->next_ptr;
     
-    if (element_a_ptr->prev_ptr != NULL) {
-        element_a_ptr->prev_ptr->next_ptr = element_b_ptr;
-    }
-    if (element_a_ptr->next_ptr != NULL) {
-        element_a_ptr->next_ptr->prev_ptr = element_b_ptr;
-    }
-    element_a_ptr->prev_ptr = element_b_ptr->prev_ptr;
-    element_a_ptr->next_ptr = element_b_ptr->next_ptr;
+    if (index_a < index_b) {
+        printf("index_a=%ld < index_b=%ld\n", index_a, index_b);
+        //
+        // A is on the left side of B
+        if (original_a_next_ptr == element_b_ptr) {
+            //
+            // A is directly besides B
+            if (element_a_ptr->prev_ptr != NULL) {
+                element_a_ptr->prev_ptr->next_ptr = element_b_ptr;
+            }
+            element_a_ptr->prev_ptr = element_b_ptr;
+            element_a_ptr->next_ptr = element_b_ptr->next_ptr;
 
-    if (element_b_ptr->prev_ptr != NULL) {
-        element_b_ptr->prev_ptr->next_ptr = element_a_ptr;
+            element_b_ptr->next_ptr->prev_ptr = element_a_ptr;
+            element_b_ptr->prev_ptr = element_a_ptr->prev_ptr;
+            element_b_ptr->next_ptr = element_a_ptr;
+
+        } else {
+            //
+            // A is not directly besides B
+            if (element_a_ptr->prev_ptr != NULL) {
+                element_a_ptr->prev_ptr->next_ptr = element_b_ptr;
+            }
+            element_a_ptr->next_ptr->prev_ptr = element_b_ptr;
+            element_a_ptr->prev_ptr = element_b_ptr->prev_ptr;
+            element_a_ptr->next_ptr = element_b_ptr->next_ptr;
+            
+            if (element_b_ptr->next_ptr != NULL) {
+                element_b_ptr->next_ptr->prev_ptr = element_a_ptr;
+            }
+            element_b_ptr->prev_ptr->next_ptr = element_a_ptr;
+            element_b_ptr->prev_ptr = original_a_prev_ptr;
+            element_b_ptr->next_ptr = original_a_next_ptr;
+        }
+    } else {
+        printf("index_a=%ld > index_b=%ld\n", index_a, index_b);
+        //
+        // index_a > index_b
+        //
+        // B is on the left side of A
+        if (original_b_next_ptr == element_a_ptr) {
+            //
+            // B is directly besides A
+            if (element_b_ptr->prev_ptr != NULL) {
+                element_b_ptr->prev_ptr->next_ptr = element_a_ptr;
+            }
+            element_b_ptr->prev_ptr = element_a_ptr;
+            element_b_ptr->next_ptr = element_a_ptr->next_ptr;
+
+            element_a_ptr->next_ptr->prev_ptr = element_b_ptr;
+            element_a_ptr->prev_ptr = element_b_ptr->prev_ptr;
+            element_a_ptr->next_ptr = element_b_ptr;
+
+        } else {
+            //
+            // B is not directly besides A
+            if (element_b_ptr->prev_ptr != NULL) {
+                element_b_ptr->prev_ptr->next_ptr = element_a_ptr;
+            }
+            element_b_ptr->next_ptr->prev_ptr = element_a_ptr;
+            element_b_ptr->prev_ptr = element_a_ptr->prev_ptr;
+            element_b_ptr->next_ptr = element_a_ptr->next_ptr;
+            
+            if (element_a_ptr->next_ptr != NULL) {
+                element_a_ptr->next_ptr->prev_ptr = element_b_ptr;
+            }
+            element_a_ptr->prev_ptr->next_ptr = element_b_ptr;
+            element_a_ptr->prev_ptr = original_b_prev_ptr;
+            element_a_ptr->next_ptr = original_b_next_ptr;
+        }
     }
-    if (element_b_ptr->next_ptr != NULL) {
-        element_b_ptr->next_ptr->prev_ptr = element_a_ptr;
-    }
-    element_b_ptr->prev_ptr = original_a_prev_ptr;
-    element_b_ptr->next_ptr = original_a_next_ptr;
 
     //
     // Adjust head_ptr/tail_ptr if required

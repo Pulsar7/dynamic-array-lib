@@ -1,11 +1,71 @@
+#define _POSIX_C_SOURCE 200809L
+#include <time.h>
 #include "sort_algorithms.h"
 #include "dynamic_array.h"
+#include <stdio.h>
 
 /*
 Helper function
 Bubble-Sort for dynamic-array with integer-elements
 */
-
+void integers_bubble_sort_inplace(DynArray* dynamic_array, SortResult* sort_result) {
+    printf("BEGIN BUBBLE\n");
+    bool swapped;
+    int current_element, next_element;
+    void* current_element_ptr;
+    void* next_element_ptr;
+    Error_Code swap_error_code;
+    struct timespec start, end;
+    size_t dyn_array_len = dynamic_array->length;
+    //
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    for (size_t array_passes_counter = 0; array_passes_counter < dyn_array_len-1; array_passes_counter++) {
+        swapped = false;
+        for (size_t current_index = 0; current_index < dyn_array_len-array_passes_counter; current_index++) {
+            printf("array_passes_counter=%ld; current_index=%ld\n", array_passes_counter, current_index);
+            //
+            // Get current element
+            current_element_ptr = get_element_by_index(dynamic_array, current_index);
+            if (current_element_ptr == NULL) {
+                sort_result->error_code = NULL_PTR_ERROR;
+                break;
+            }
+            current_element = *(int*)current_element_ptr;
+            printf("current_element=%d; current_element_ptr=%p\n", current_element, current_element_ptr);
+            //
+            // Get next element
+            next_element_ptr = get_element_by_index(dynamic_array, current_index+1);
+            if (next_element_ptr == NULL) {
+                sort_result->error_code = NULL_PTR_ERROR;
+                break;
+            }
+            next_element = *(int*)next_element_ptr;
+            printf("next_element=%d; next_element_ptr=%p\n", next_element, next_element_ptr);
+            //
+            // Compare current_element and next_element
+            if (current_element > next_element) {
+                printf("SWAP!!!\n");
+                //
+                // Swap current_element with new_element since current_element is larger
+                swap_error_code = swap_elements_by_indices(dynamic_array, current_index, current_index+1);
+                if (swap_error_code != NO_ERROR) {
+                    //
+                    // Swap failed
+                    sort_result->error_code = swap_error_code;
+                    break;
+                }
+                swapped = true;
+            }
+        }
+        if (swapped == false) {
+            break;
+        }
+    }
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    //
+    // Calculate timedelta
+    sort_result->runtime_ms = (double)(((end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec))/1e7);
+}
 
 /*
 Sort integers-dynamic-array inplace with the given `Sort_Algorithm`.
@@ -21,9 +81,9 @@ SortResult sort_dyn_array_integers_inplace(DynArray* dynamic_array, Sort_Algorit
         sort_result.error_code = INVALID_ARRAY_ERROR;
         return sort_result;
     }
-    if (dynamic_array->length == 0) {
+    if (dynamic_array->length < 2) {
         //
-        // Given dynamic-array is empty
+        // Given dynamic-array has only one element or none
         sort_result.error_code = INVALID_ARRAY_ERROR;
         return sort_result;
     }
@@ -49,6 +109,7 @@ SortResult sort_dyn_array_integers_inplace(DynArray* dynamic_array, Sort_Algorit
         case SORT_ALG_BUBBLE:
             //
             // selected bubble-sort
+            integers_bubble_sort_inplace(dynamic_array, &sort_result);
             break;
         
         case SORT_ALG_MERGE:
