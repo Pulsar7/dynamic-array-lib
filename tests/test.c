@@ -284,6 +284,9 @@ void test_integers_bubble_sort_inplace() {
     // Bubble-Sort array
     SortResult sort_result = sort_dyn_array_integers_inplace(&dynamic_array, SORT_ALG_BUBBLE);
     assert(sort_result.error_code == NO_ERROR);
+    for (int i = 0; (size_t)i < dynamic_array.length; i++) {
+        assert(*(int*)get_element_by_index(&dynamic_array, i) == i+1);
+    }
     //
     // Clear dynamic-array
     assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
