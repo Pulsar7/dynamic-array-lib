@@ -9,7 +9,6 @@ Helper function
 Bubble-Sort for dynamic-array with integer-elements
 */
 void integers_bubble_sort_inplace(DynArray* dynamic_array, SortResult* sort_result) {
-    printf("BEGIN BUBBLE\n");
     bool swapped;
     int current_element, next_element;
     void* current_element_ptr;
@@ -21,8 +20,7 @@ void integers_bubble_sort_inplace(DynArray* dynamic_array, SortResult* sort_resu
     clock_gettime(CLOCK_MONOTONIC, &start);
     for (size_t array_passes_counter = 0; array_passes_counter < dyn_array_len-1; array_passes_counter++) {
         swapped = false;
-        for (size_t current_index = 0; current_index < dyn_array_len-array_passes_counter; current_index++) {
-            printf("array_passes_counter=%ld; current_index=%ld\n", array_passes_counter, current_index);
+        for (size_t current_index = 0; current_index < dyn_array_len-array_passes_counter-1; current_index++) {
             //
             // Get current element
             current_element_ptr = get_element_by_index(dynamic_array, current_index);
@@ -31,7 +29,6 @@ void integers_bubble_sort_inplace(DynArray* dynamic_array, SortResult* sort_resu
                 break;
             }
             current_element = *(int*)current_element_ptr;
-            printf("current_element=%d; current_element_ptr=%p\n", current_element, current_element_ptr);
             //
             // Get next element
             next_element_ptr = get_element_by_index(dynamic_array, current_index+1);
@@ -40,11 +37,9 @@ void integers_bubble_sort_inplace(DynArray* dynamic_array, SortResult* sort_resu
                 break;
             }
             next_element = *(int*)next_element_ptr;
-            printf("next_element=%d; next_element_ptr=%p\n", next_element, next_element_ptr);
             //
             // Compare current_element and next_element
             if (current_element > next_element) {
-                printf("SWAP!!!\n");
                 //
                 // Swap current_element with new_element since current_element is larger
                 swap_error_code = swap_elements_by_indices(dynamic_array, current_index, current_index+1);
@@ -73,7 +68,7 @@ This function assumes that **all** elements in the given dynamic-array are integ
 Returns `INVALID_ARRAY_ERROR` if data-size of element doesn't equal `sizeof(int)`.
 */
 SortResult sort_dyn_array_integers_inplace(DynArray* dynamic_array, Sort_Algorithm sort_algorithm) {
-    SortResult sort_result = {NO_ERROR, -1};
+    SortResult sort_result = {.error_code=NO_ERROR, .runtime_ms=-1.0};
     //
     if (check_dyn_array(dynamic_array) != NO_ERROR) {
         //

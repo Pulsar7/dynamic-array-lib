@@ -429,7 +429,6 @@ Error_Code swap_elements_by_indices(DynArray* dynamic_array, const size_t index_
     DynArrayNode* original_b_next_ptr = element_b_ptr->next_ptr;
     
     if (index_a < index_b) {
-        printf("index_a=%ld < index_b=%ld\n", index_a, index_b);
         //
         // A is on the left side of B
         if (original_a_next_ptr == element_b_ptr) {
@@ -441,10 +440,11 @@ Error_Code swap_elements_by_indices(DynArray* dynamic_array, const size_t index_
             element_a_ptr->prev_ptr = element_b_ptr;
             element_a_ptr->next_ptr = element_b_ptr->next_ptr;
 
-            element_b_ptr->next_ptr->prev_ptr = element_a_ptr;
-            element_b_ptr->prev_ptr = element_a_ptr->prev_ptr;
+            if (element_b_ptr->next_ptr != NULL) {
+                element_b_ptr->next_ptr->prev_ptr = element_a_ptr;
+            }
+            element_b_ptr->prev_ptr = original_a_prev_ptr;
             element_b_ptr->next_ptr = element_a_ptr;
-
         } else {
             //
             // A is not directly besides B
@@ -463,27 +463,27 @@ Error_Code swap_elements_by_indices(DynArray* dynamic_array, const size_t index_
             element_b_ptr->next_ptr = original_a_next_ptr;
         }
     } else {
-        printf("index_a=%ld > index_b=%ld\n", index_a, index_b);
         //
         // index_a > index_b
         //
         // B is on the left side of A
         if (original_b_next_ptr == element_a_ptr) {
             //
-            // B is directly besides A
+            // A is directly besides B
             if (element_b_ptr->prev_ptr != NULL) {
                 element_b_ptr->prev_ptr->next_ptr = element_a_ptr;
             }
             element_b_ptr->prev_ptr = element_a_ptr;
             element_b_ptr->next_ptr = element_a_ptr->next_ptr;
 
-            element_a_ptr->next_ptr->prev_ptr = element_b_ptr;
-            element_a_ptr->prev_ptr = element_b_ptr->prev_ptr;
+            if (element_a_ptr->next_ptr != NULL) {
+                element_a_ptr->next_ptr->prev_ptr = element_b_ptr;
+            }
+            element_a_ptr->prev_ptr = original_b_prev_ptr;
             element_a_ptr->next_ptr = element_b_ptr;
-
         } else {
             //
-            // B is not directly besides A
+            // A is not directly besides B
             if (element_b_ptr->prev_ptr != NULL) {
                 element_b_ptr->prev_ptr->next_ptr = element_a_ptr;
             }
@@ -548,6 +548,9 @@ Error_Code clear_dyn_array(DynArray* dynamic_array) {
         //
         // First deallocate data
         free(current_ptr->prev_ptr->data);
+        if (current_ptr->data_size == sizeof(int)) {
+        } else {
+        }
         //
         // Then deallocate node
         free(current_ptr->prev_ptr);
