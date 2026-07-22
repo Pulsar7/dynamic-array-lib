@@ -13,9 +13,6 @@ typedef enum Sort_Algorithm {
 
 typedef struct SortResult {
     Error_Code error_code;
-    //
-    // Runtime in milliseconds
-    double runtime_ms;
 } SortResult;
 
 /*

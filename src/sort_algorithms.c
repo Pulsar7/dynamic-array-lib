@@ -1,5 +1,3 @@
-#define _POSIX_C_SOURCE 200809L
-#include <time.h>
 #include "sort_algorithms.h"
 #include "dynamic_array.h"
 #include <stdio.h>
@@ -99,33 +97,22 @@ void integer_merge_sort_inplace_merge(DynArray* dynamic_array, SortResult* sort_
 }
 
 /*
-(Helper) Helper function
+Helper function
 Merge-Sort for dynamic-array with integer-elements.
 */
-void run_integers_merge_sort_inplace(DynArray* dynamic_array, SortResult* sort_result, const size_t left_index, const size_t right_index) {
+void integers_merge_sort_inplace(DynArray* dynamic_array, SortResult* sort_result, const size_t left_index, const size_t right_index) {
     if (left_index < right_index) {
         size_t middle_index = left_index + (right_index - left_index)/2;
         //
         // Sort first half
-        run_integers_merge_sort_inplace(dynamic_array, sort_result, left_index, middle_index);
+        integers_merge_sort_inplace(dynamic_array, sort_result, left_index, middle_index);
         //
         // Sort second half
-        run_integers_merge_sort_inplace(dynamic_array, sort_result, middle_index+1, right_index);
+        integers_merge_sort_inplace(dynamic_array, sort_result, middle_index+1, right_index);
         //
         // Merge sub-arrays
         integer_merge_sort_inplace_merge(dynamic_array, sort_result, left_index, middle_index, right_index);
     }
-}
-
-/*
-Helper function
-Merge-Sort for dynamic-array with integer-elements - with time measurement
-*/
-void integers_merge_sort_inplace(DynArray* dynamic_array, SortResult* sort_result, const size_t left_index, const size_t right_index) {
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    run_integers_merge_sort_inplace(dynamic_array, sort_result, left_index, right_index);
-    clock_gettime(CLOCK_MONOTONIC, &end);
 }
 
 /*
@@ -138,10 +125,8 @@ void integers_bubble_sort_inplace(DynArray* dynamic_array, SortResult* sort_resu
     void* current_element_ptr;
     void* next_element_ptr;
     Error_Code swap_error_code;
-    struct timespec start, end;
     size_t dyn_array_len = dynamic_array->length;
     //
-    clock_gettime(CLOCK_MONOTONIC, &start);
     for (size_t array_passes_counter = 0; array_passes_counter < dyn_array_len-1; array_passes_counter++) {
         swapped = false;
         for (size_t current_index = 0; current_index < dyn_array_len-array_passes_counter-1; current_index++) {
@@ -180,10 +165,6 @@ void integers_bubble_sort_inplace(DynArray* dynamic_array, SortResult* sort_resu
             break;
         }
     }
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    //
-    // Calculate timedelta
-    sort_result->runtime_ms = (double)(((end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec))/1e7);
 }
 
 /*
@@ -192,7 +173,7 @@ This function assumes that **all** elements in the given dynamic-array are integ
 Returns `INVALID_ARRAY_ERROR` if data-size of element doesn't equal `sizeof(int)`.
 */
 SortResult sort_dyn_array_integers_inplace(DynArray* dynamic_array, Sort_Algorithm sort_algorithm) {
-    SortResult sort_result = {.error_code=NO_ERROR, .runtime_ms=-1.0};
+    SortResult sort_result = {.error_code=NO_ERROR};
     //
     if (check_dyn_array(dynamic_array) != NO_ERROR) {
         //
@@ -240,7 +221,6 @@ SortResult sort_dyn_array_integers_inplace(DynArray* dynamic_array, Sort_Algorit
         default:
             //
             // Given `sort_algorithm` is invalid
-            // TODO: Reachable?
             sort_result.error_code = INVALID_ARGUMENT_ERROR;
             break;
     }
