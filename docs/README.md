@@ -11,6 +11,10 @@
   - [Get element of Dynamic-array by index](#get-element-of-dynamic-array-by-index)
   - [Append two Dynamic-Arrays inplace](#append-two-dynamic-arrays-inplace)
   - [Swap position of elements in Dynamic-Array](#swap-position-of-elements-in-dynamic-array)
+  - [Replace an Element by index](#replace-an-element-by-index)
+  - [Sort-Algorithms](#sort-algorithms)
+    - [Bubble-Sort](#bubble-sort)
+    - [Merge-Sort](#merge-sort)
 - [ToDo](#todo)
 
 ## Description
@@ -222,6 +226,94 @@ if (append_static_array_elements_to_dyn_array(&dynamic_array, (void*)static_int_
 //
 // Clear dynamic-array
 if (clear_dyn_array(&dynamic_array_a) != NO_ERROR) {
+    return 1;
+}
+
+return 0;
+```
+
+### Replace an Element by index
+
+```C
+//
+// Initialize dynamic-array
+DynArray dyn_a;
+if (init_dyn_array(&dyn_a) != NO_ERROR) {
+    return 1;
+}
+//
+// Append static-integer-array to dynamic-array
+int int_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+if (append_static_array_elements_to_dyn_array(&dyn_a, (void*)int_array, sizeof(int), (size_t)9) == NO_ERROR) {
+    //
+    // Replace int-element at index 0 with int-element 1337
+    int new_data = 1337;
+    replace_element_by_index(&dyn_a, (size_t)0, (void*)&new_data, sizeof(int));
+}
+//
+// Clear dynamic-array
+if (clear_dyn_array(&dyn_a) != NO_ERROR) {
+    return 1;
+}
+
+return 0;
+```
+
+
+### Sort-Algorithms
+
+> [!IMPORTANT]
+> The current sort-algorithm implementations require a `DynArray` with **only** `int`-elements. The one and only "validity-check" iterates the whole `DynArray` with that statement: `current_ptr->data_size != sizeof(int)` - which is not ideal.
+> Please make sure that you only use the current implementation with `int`-Dynamic-Arrays.
+
+#### Bubble-Sort
+
+```C
+//
+// Initialize dynamic-array
+DynArray dyn_a;
+if (init_dyn_array(&dyn_a) != NO_ERROR) {
+    return 1;
+}
+//
+// Append static-integer-array to dynamic-array
+int int_array[] = {5, 19, 9, 1, 2, 8, 3, 7, 6, 10, 11, 13, 14, 12, 16, 17, 15, 18, 20, 4};
+size_t int_arr_l = sizeof(int_array)/sizeof(int);
+if (append_static_array_elements_to_dyn_array(&dyn_a, (void*)int_array, sizeof(int), int_arr_l) == NO_ERROR) {
+    //
+    // Bubble-Sort array
+    SortResult sort_result = sort_dyn_array_integers_inplace(&dyn_a, SORT_ALG_BUBBLE);
+}
+//
+// Clear dynamic-array
+if (clear_dyn_array(&dyn_a) != NO_ERROR) {
+    return 1;
+}
+
+return 0;
+```
+
+#### Merge-Sort
+
+```C
+//
+// Initialize dynamic-array
+DynArray dyn_a;
+if (init_dyn_array(&dyn_a) != NO_ERROR) {
+    return 1;
+}
+//
+// Append static-integer-array to dynamic-array
+int int_array[] = {5, 19, 9, 1, 2, 8, 3, 7, 6, 10, 11, 13, 14, 12, 16, 17, 15, 18, 20, 4};
+size_t int_arr_l = sizeof(int_array)/sizeof(int);
+if (append_static_array_elements_to_dyn_array(&dyn_a, (void*)int_array, sizeof(int), int_arr_l) == NO_ERROR) {
+    //
+    // Merge-Sort array
+    SortResult sort_result = sort_dyn_array_integers_inplace(&dyn_a, SORT_ALG_MERGE);
+}
+//
+// Clear dynamic-array
+if (clear_dyn_array(&dyn_a) != NO_ERROR) {
     return 1;
 }
 
