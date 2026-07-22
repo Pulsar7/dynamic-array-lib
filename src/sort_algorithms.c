@@ -99,22 +99,33 @@ void integer_merge_sort_inplace_merge(DynArray* dynamic_array, SortResult* sort_
 }
 
 /*
-Helper function
-Merge-Sort for dynamic-array with integer-elements
+(Helper) Helper function
+Merge-Sort for dynamic-array with integer-elements.
 */
-void integer_merge_sort_inplace(DynArray* dynamic_array, SortResult* sort_result, const size_t left_index, const size_t right_index) {
+void run_integers_merge_sort_inplace(DynArray* dynamic_array, SortResult* sort_result, const size_t left_index, const size_t right_index) {
     if (left_index < right_index) {
         size_t middle_index = left_index + (right_index - left_index)/2;
         //
         // Sort first half
-        integer_merge_sort_inplace(dynamic_array, sort_result, left_index, middle_index);
+        run_integers_merge_sort_inplace(dynamic_array, sort_result, left_index, middle_index);
         //
         // Sort second half
-        integer_merge_sort_inplace(dynamic_array, sort_result, middle_index+1, right_index);
+        run_integers_merge_sort_inplace(dynamic_array, sort_result, middle_index+1, right_index);
         //
         // Merge sub-arrays
         integer_merge_sort_inplace_merge(dynamic_array, sort_result, left_index, middle_index, right_index);
     }
+}
+
+/*
+Helper function
+Merge-Sort for dynamic-array with integer-elements - with time measurement
+*/
+void integers_merge_sort_inplace(DynArray* dynamic_array, SortResult* sort_result, const size_t left_index, const size_t right_index) {
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    run_integers_merge_sort_inplace(dynamic_array, sort_result, left_index, right_index);
+    clock_gettime(CLOCK_MONOTONIC, &end);
 }
 
 /*
@@ -223,7 +234,7 @@ SortResult sort_dyn_array_integers_inplace(DynArray* dynamic_array, Sort_Algorit
         case SORT_ALG_MERGE:
             //
             // selected merge-sort
-            integer_merge_sort_inplace(dynamic_array, &sort_result, 0, dynamic_array->length-1);
+            integers_merge_sort_inplace(dynamic_array, &sort_result, 0, dynamic_array->length-1);
             break;
         
         default:
