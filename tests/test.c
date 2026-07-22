@@ -1,6 +1,5 @@
 #include "dynamic_array.h"
 #include "sort_algorithms.h"
-#include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
 #include <string.h>

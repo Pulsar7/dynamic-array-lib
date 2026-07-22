@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <stdio.h>
 
 /*
 Helper function

@@ -1,6 +1,5 @@
 #include "sort_algorithms.h"
 #include "dynamic_array.h"
-#include <stdio.h>
 
 /*
 (Helper) helper function
