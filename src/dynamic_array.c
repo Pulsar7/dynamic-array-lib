@@ -52,7 +52,7 @@ Error_Code init_dyn_array(DynArray* dynamic_array) {
 Create node and copy memory data.
 This function assumes, that the given `data-ptr` and `data_size` are valid.
 */
-DynArrayNode* create_new_dyn_array_node(void* data, const size_t data_size) {
+DynArrayNode* create_new_dyn_array_node(const void* data, const size_t data_size) {
     //
     // Allocate new `DynArrayNode`
     DynArrayNode* new_node = (DynArrayNode*) calloc(1, sizeof(DynArrayNode));
@@ -95,7 +95,7 @@ This function assumes, that the given dynamic-array has already been checked wit
 
 Set `dynamic_array->length` to 1.
 */
-Error_Code add_first_element_to_dyn_array(DynArray* dynamic_array, void* data, const size_t data_size) {
+Error_Code add_first_element_to_dyn_array(DynArray* dynamic_array, const void* data, const size_t data_size) {
     DynArrayNode* first_node = create_new_dyn_array_node(data, data_size);
     if (first_node == NULL) {
         //
@@ -118,7 +118,7 @@ Append element to dynamic-array.
 
 Increases `dynamic_array->length` by 1.
 */
-Error_Code append_element_to_dyn_array(DynArray* dynamic_array, void* data, const size_t data_size) {
+Error_Code append_element_to_dyn_array(DynArray* dynamic_array, const void* data, const size_t data_size) {
     if (check_dyn_array(dynamic_array) != NO_ERROR) {
         //
         // Given dynamic-array is invalid
@@ -244,7 +244,7 @@ bool get_len(const DynArray* dynamic_array, size_t* len) {
 Copy the array’s elements individually into the dynamic-array.
 Uses `append_element_to_dyn_array` under the hood.
 */
-Error_Code append_static_array_elements_to_dyn_array(DynArray* dynamic_array, void* static_array, const size_t static_array_elem_size, const size_t static_array_len) {
+Error_Code append_static_array_elements_to_dyn_array(DynArray* dynamic_array, const void* static_array, const size_t static_array_elem_size, const size_t static_array_len) {
     if (check_dyn_array(dynamic_array) != NO_ERROR) {
         //
         // Given dynamic-array is invalid
@@ -277,7 +277,7 @@ Error_Code append_static_array_elements_to_dyn_array(DynArray* dynamic_array, vo
 }
 
 /*
-Get element-ptr of dynamic-array by index.
+Get element-ptr of dynamic-array-Node by index.
 
 Return `NULL` if an error occurs.
 */
@@ -499,7 +499,6 @@ Error_Code swap_elements_by_indices(DynArray* dynamic_array, const size_t index_
             element_a_ptr->next_ptr = original_b_next_ptr;
         }
     }
-
     //
     // Adjust head_ptr/tail_ptr if required
     if (element_a_ptr == dynamic_array->head_ptr) {
@@ -527,6 +526,62 @@ Error_Code swap_elements_by_indices(DynArray* dynamic_array, const size_t index_
 }
 
 /*
+Replace an element-data by its index inplace.
+Stored element-data gets deleted and new element-data gets stored at the given index.
+*/
+Error_Code replace_element_by_index(DynArray* dynamic_array, const size_t index, const void* data, const size_t data_size) {
+    if (check_dyn_array(dynamic_array) != NO_ERROR) {
+        //
+        // Given dynamic-array is invalid
+        return INVALID_ARRAY_ERROR;
+    }
+    //
+    // Check whether given data-size is valid
+    if (data_size == 0) {
+        //
+        // data_size shouldn't be zero
+        return INVALID_DATA_SIZE;
+    }
+    //
+    // Check whether given data-pointer is probably valid
+    if (data == NULL) {
+        //
+        // data-pointer shouldn't be the NULL-pointer
+        return NULL_PTR_ERROR;
+    }
+    //
+    // Check whether an element exists at the given index
+    DynArrayNode* element_node_ptr = get_element_ptr_by_index(dynamic_array, index);
+    if (element_node_ptr == NULL) {
+        //
+        // Index out of bounds
+        return INVALID_INDEX_ERROR;
+    }
+    //
+    // Check whether data-size is the same
+    // Otherwise we have to deallocate space and allocate (new) space for the data
+    if (element_node_ptr->data_size != data_size) {
+        void* new_data_ptr = calloc(1, data_size);
+        if (element_node_ptr->data == NULL) {
+            //
+            // Couldn't allocate space for new data
+            return NULL_PTR_ERROR;
+        }
+        //
+        // Deallocate current-data
+        free(element_node_ptr->data);
+        //
+        // Set new data-ptr
+        element_node_ptr->data = new_data_ptr;
+    }
+    //
+    // Copy/Overwrite data
+    memcpy(element_node_ptr->data, data, data_size);
+    
+    return NO_ERROR;
+}
+
+/*
 Deallocate space of all elments in a dynamic-array.
 */
 Error_Code clear_dyn_array(DynArray* dynamic_array) {
@@ -548,9 +603,6 @@ Error_Code clear_dyn_array(DynArray* dynamic_array) {
         //
         // First deallocate data
         free(current_ptr->prev_ptr->data);
-        if (current_ptr->data_size == sizeof(int)) {
-        } else {
-        }
         //
         // Then deallocate node
         free(current_ptr->prev_ptr);

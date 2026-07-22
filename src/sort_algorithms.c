@@ -5,6 +5,119 @@
 #include <stdio.h>
 
 /*
+(Helper) helper function
+Merge divided arrays 
+*/
+void integer_merge_sort_inplace_merge(DynArray* dynamic_array, SortResult* sort_result, const size_t left_index, const size_t middle_index, const size_t right_index) {
+    //
+    // Get length of both halfes
+    size_t left_half_len = middle_index - left_index + 1;
+    size_t right_half_len = right_index - middle_index;
+    //
+    // Create temporary buffers
+    int left_temp_buff[left_half_len];
+    int right_temp_buff[right_half_len];
+    //
+    // Copy left-half into left_temp_buf
+    int* element;
+    for (size_t i = 0; i < left_half_len; i++) {
+        element = (int*)get_element_by_index(dynamic_array, left_index + i);
+        if (element == NULL) {
+            //
+            // Couldn't get element from dynamic-array
+            sort_result->error_code = NULL_PTR_ERROR;
+            return;
+        }
+        left_temp_buff[i] = *element;
+    }
+    //
+    // Copy right-half into right_temp_buf
+    for (size_t j = 0; j < right_half_len; j++) {
+        element = (int*)get_element_by_index(dynamic_array, middle_index + 1 + j);
+        if (element == NULL) {
+            //
+            // Couldn't get element from dynamic-array
+            sort_result->error_code = NULL_PTR_ERROR;
+            return;
+        }
+        right_temp_buff[j] = *element;
+    }
+    //
+    // Merge back into dynamic-array
+    //
+    // `i` index of left_temp_buff
+    // `j` index of right_temp_buff
+    // `k` index at actualy dynamic-array
+    size_t i, j, k;
+    i = 0; j = 0; k = left_index;
+    while (i < left_half_len && j < right_half_len) {
+        if (left_temp_buff[i] <= right_temp_buff[j]) {
+            //
+            // place left_temp_buff[i]
+            if (replace_element_by_index(dynamic_array, k, (void*)&(left_temp_buff[i]), sizeof(int)) != NO_ERROR) {
+                //
+                // Couldn't replace element
+                sort_result->error_code = NULL_PTR_ERROR;
+                return;
+            }
+            i++;
+        } else {
+            //
+            // place right_temp_buff[j]
+            if (replace_element_by_index(dynamic_array, k, (void*)&(right_temp_buff[j]), sizeof(int)) != NO_ERROR) {
+                //
+                // Couldn't replace element
+                sort_result->error_code = NULL_PTR_ERROR;
+                return;
+            }
+            j++;
+        }
+        k++;
+    }
+    //
+    // Copy remaining elements (only one side have leftovers)
+    while (i < left_half_len) {
+        if (replace_element_by_index(dynamic_array, k, (void*)&(left_temp_buff[i]), sizeof(int)) != NO_ERROR) {
+            //
+            // Couldn't replace element
+            sort_result->error_code = NULL_PTR_ERROR;
+            return;
+        }
+        i++;
+        k++;
+    }
+    while (j < right_half_len) {
+        if (replace_element_by_index(dynamic_array, k, (void*)&(right_temp_buff[j]), sizeof(int)) != NO_ERROR) {
+            //
+            // Couldn't replace element
+            sort_result->error_code = NULL_PTR_ERROR;
+            return;
+        }
+        j++;
+        k++;
+    }
+}
+
+/*
+Helper function
+Merge-Sort for dynamic-array with integer-elements
+*/
+void integer_merge_sort_inplace(DynArray* dynamic_array, SortResult* sort_result, const size_t left_index, const size_t right_index) {
+    if (left_index < right_index) {
+        size_t middle_index = left_index + (right_index - left_index)/2;
+        //
+        // Sort first half
+        integer_merge_sort_inplace(dynamic_array, sort_result, left_index, middle_index);
+        //
+        // Sort second half
+        integer_merge_sort_inplace(dynamic_array, sort_result, middle_index+1, right_index);
+        //
+        // Merge sub-arrays
+        integer_merge_sort_inplace_merge(dynamic_array, sort_result, left_index, middle_index, right_index);
+    }
+}
+
+/*
 Helper function
 Bubble-Sort for dynamic-array with integer-elements
 */
@@ -110,11 +223,14 @@ SortResult sort_dyn_array_integers_inplace(DynArray* dynamic_array, Sort_Algorit
         case SORT_ALG_MERGE:
             //
             // selected merge-sort
+            integer_merge_sort_inplace(dynamic_array, &sort_result, 0, dynamic_array->length-1);
             break;
         
-        case SORT_ALG_QUICK:
+        default:
             //
-            // selected quick-sort
+            // Given `sort_algorithm` is invalid
+            // TODO: Reachable?
+            sort_result.error_code = INVALID_ARGUMENT_ERROR;
             break;
     }
 

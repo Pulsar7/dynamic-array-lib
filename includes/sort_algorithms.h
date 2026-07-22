@@ -8,8 +8,7 @@ Define enums, structs
 */
 typedef enum Sort_Algorithm {
     SORT_ALG_BUBBLE=0,
-    SORT_ALG_QUICK=1,
-    SORT_ALG_MERGE=2
+    SORT_ALG_MERGE=1
 } Sort_Algorithm;
 
 typedef struct SortResult {
