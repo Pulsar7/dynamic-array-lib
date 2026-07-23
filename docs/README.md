@@ -11,7 +11,8 @@
   - [Get element of Dynamic-array by index](#get-element-of-dynamic-array-by-index)
   - [Append two Dynamic-Arrays inplace](#append-two-dynamic-arrays-inplace)
   - [Swap position of elements in Dynamic-Array](#swap-position-of-elements-in-dynamic-array)
-  - [Replace an Element by index](#replace-an-element-by-index)
+  - [Replace an element by index](#replace-an-element-by-index)
+  - [Insert an element at an index](#insert-an-element-at-an-index)
   - [Sort-Algorithms](#sort-algorithms)
     - [Bubble-Sort](#bubble-sort)
     - [Merge-Sort](#merge-sort)
@@ -232,7 +233,7 @@ if (clear_dyn_array(&dynamic_array_a) != NO_ERROR) {
 return 0;
 ```
 
-### Replace an Element by index
+### Replace an element by index
 
 ```C
 //
@@ -249,6 +250,33 @@ if (append_static_array_elements_to_dyn_array(&dyn_a, (void*)int_array, sizeof(i
     // Replace int-element at index 0 with int-element 1337
     int new_data = 1337;
     replace_element_by_index(&dyn_a, (size_t)0, (void*)&new_data, sizeof(int));
+}
+//
+// Clear dynamic-array
+if (clear_dyn_array(&dyn_a) != NO_ERROR) {
+    return 1;
+}
+
+return 0;
+```
+
+### Insert an element at an index
+
+```C
+//
+// Initialize dynamic-array
+DynArray dyn_a;
+if (init_dyn_array(&dyn_a) != NO_ERROR) {
+    return 1;
+}
+//
+// Append static-integer-array to dynamic-array
+int int_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+if (append_static_array_elements_to_dyn_array(&dyn_a, (void*)int_array, sizeof(int), (size_t)9) == NO_ERROR) {
+    //
+    // Insert additional element at index 0
+    int new_element = 1337;
+    insert_element_at_index(&dyn_a, (size_t)0, (void*)&new_element, sizeof(int));
 }
 //
 // Clear dynamic-array
