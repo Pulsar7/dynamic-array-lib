@@ -46,11 +46,16 @@ Error_Code init_dyn_array(DynArray* dynamic_array) {
     return NO_ERROR;
 }
 
-/*
-(Helper) Helper function
-Create node and copy memory data.
-This function assumes, that the given `data-ptr` and `data_size` are valid.
-*/
+/**
+ * (Helper) Helper function -
+ * Create node and copy memory data.
+ * 
+ * @param data A void-Pointer to the actual data that should be stored at the new `DynArrayNode`.
+ * @param data_size Size in Bytes of the given data.
+ * 
+ * @return `DynArrayNode*`-Pointer on success; Otherwise `NULL`-Pointer
+ * @note This function assumes,that the given `data`-pointer isn't the `NULL`-Pointer and `data_size` is not `0`.
+ */
 DynArrayNode* create_new_dyn_array_node(const void* data, const size_t data_size) {
     //
     // Allocate new `DynArrayNode`
@@ -577,6 +582,88 @@ Error_Code replace_element_by_index(DynArray* dynamic_array, const size_t index,
     // Copy/Overwrite data
     memcpy(element_node_ptr->data, data, data_size);
     
+    return NO_ERROR;
+}
+
+/**
+ * Insert an element at the given index.
+ * 
+ * @param dynamic_array `DynArray`-Pointer to the given exsiting dynamic-array.
+ * @param index The given where the new element should be inserted at.
+ * @param data The `void`-Pointer to the data that should be stored at the new element.
+ * @param data_size Size in Bytes of the given data.
+ * 
+ * @return `Error_Code` - `NO_ERROR` on success; otherwise another `Error_Code`.
+ */
+Error_Code insert_element_at_index(DynArray* dynamic_array, const size_t index, const void* data, const size_t data_size) {
+    if (check_dyn_array(dynamic_array) != NO_ERROR) {
+        //
+        // Given dynamic-array is invalid
+        return INVALID_ARRAY_ERROR;
+    }
+    //
+    // Check whether given data-size is valid
+    if (data_size == 0) {
+        //
+        // data_size shouldn't be zero
+        return INVALID_DATA_SIZE;
+    }
+    //
+    // Check whether given data-pointer is probably valid
+    if (data == NULL) {
+        //
+        // data-pointer shouldn't be the NULL-pointer
+        return NULL_PTR_ERROR;
+    }
+    //
+    // Check whether given index are valid
+    if (index >= dynamic_array->length) {
+        //
+        // Given index is out of bounds
+        return INVALID_INDEX_ERROR;
+    }
+    //
+    // Get element-ptr at given index
+    DynArrayNode* current_node_at_index = get_element_ptr_by_index(dynamic_array, index);
+    if (current_node_at_index == NULL) {
+        //
+        // Couldn't get element at the given index
+        return NULL_PTR_ERROR;
+    }
+    //
+    // Create new node
+    DynArrayNode* new_node = create_new_dyn_array_node(data, data_size);
+    if (new_node == NULL) {
+        //
+        // Couldn't create new node
+        return NULL_PTR_ERROR;
+    }
+    //
+    // Adjust next-pointer of new-node to current-node at index
+    new_node->next_ptr = current_node_at_index;
+    //
+    // Adjust previous-pointer of new-node to previous-pointer of
+    // current-node at index
+    new_node->prev_ptr = current_node_at_index->prev_ptr;
+    //
+    // Adjust next-pointer of element previous to the current-node
+    // at index to point at new-node
+    if (current_node_at_index->prev_ptr != NULL) {
+        current_node_at_index->prev_ptr->next_ptr = new_node;
+    }
+    //
+    // Adjust previous-pointer of current-node at index to point at new-node
+    current_node_at_index->prev_ptr = new_node;
+    //
+    // Adjust head_ptr if required
+    if (current_node_at_index == dynamic_array->head_ptr) {
+        //
+        // New node gets new head_ptr
+        dynamic_array->head_ptr = new_node;
+    }
+    //
+    // Increase dynamic-array length-counter
+    dynamic_array->length++;
     return NO_ERROR;
 }
 

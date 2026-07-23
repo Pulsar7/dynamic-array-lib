@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdio.h>
 
 /*
 Initialize and clear a new empty dynamic-array.
@@ -324,6 +325,32 @@ void test_replace_element_by_index() {
     assert(dynamic_array.tail_ptr == NULL);
 }
 
+void test_insert_element_at_index() {
+    DynArray dynamic_array;
+    assert(init_dyn_array(&dynamic_array) == NO_ERROR);
+    //
+    // Append static-integer-array to dynamic-array
+    int static_int_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    assert(append_static_array_elements_to_dyn_array(&dynamic_array, (void*)static_int_array, sizeof(int), (size_t)9) == NO_ERROR);
+    //
+    // Insert additional element at index 0
+    int additional_element = 1337;
+    assert(insert_element_at_index(&dynamic_array, (size_t)0, (void*)&additional_element, sizeof(int)) == NO_ERROR);
+    assert(dynamic_array.length == 10);
+    assert(*(int*)get_element_by_index(&dynamic_array, 0) == 1337);
+    //
+    // Insert additional element at index 9
+    additional_element = 9999;
+    assert(insert_element_at_index(&dynamic_array, (size_t)9, (void*)&additional_element, sizeof(int)) == NO_ERROR);
+    assert(dynamic_array.length == 11);
+    assert(*(int*)get_element_by_index(&dynamic_array, 9) == 9999);
+    //
+    // Clear dynamic-array
+    assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
+    assert(dynamic_array.head_ptr == NULL);
+    assert(dynamic_array.tail_ptr == NULL);
+}
+
 //
 
 /*
@@ -391,6 +418,7 @@ int main() {
     test_append_dyn_arrays_inplace();
     test_swap_elements_by_indices();
     test_replace_element_by_index();
+    test_insert_element_at_index();
 
     //
 

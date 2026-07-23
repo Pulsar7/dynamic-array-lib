@@ -44,6 +44,7 @@ void* get_element_by_index(const DynArray* dynamic_array, const size_t index);
 bool append_dyn_arrays_inplace(DynArray* a, const DynArray* b);
 Error_Code swap_elements_by_indices(DynArray* dynamic_array, const size_t index_a, const size_t index_b);
 Error_Code replace_element_by_index(DynArray* dynamic_array, const size_t index, const void* data, const size_t data_size);
+Error_Code insert_element_at_index(DynArray* dynamic_array, const size_t index, const void* data, const size_t data_size);
 Error_Code clear_dyn_array(DynArray* dynamic_array);
 
 #endif // DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H
