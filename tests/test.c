@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <string.h>
-#include <stdio.h>
 
 /*
 Initialize and clear a new empty dynamic-array.
