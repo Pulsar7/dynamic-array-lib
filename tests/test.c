@@ -26,7 +26,7 @@ void test_append_simple_integer_value() {
     assert(get_first(&dynamic_array) == get_last(&dynamic_array));
     assert(*(int*)get_first(&dynamic_array) == *(int*)get_last(&dynamic_array));
     size_t array_len;
-    assert(get_len(&dynamic_array, &array_len) == true);
+    assert(get_len(&dynamic_array, &array_len) == NO_ERROR);
     assert(array_len == 1);
     assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
     assert(dynamic_array.head_ptr == NULL);
@@ -45,7 +45,7 @@ void test_append_for_loop_integers() {
     assert(get_first(&dynamic_array) != get_last(&dynamic_array));
     assert(*(int*)get_first(&dynamic_array) != *(int*)get_last(&dynamic_array));
     size_t array_len;
-    assert(get_len(&dynamic_array, &array_len) == true);
+    assert(get_len(&dynamic_array, &array_len) == NO_ERROR);
     assert(array_len == 50000);
     void* data = get_element_by_index(&dynamic_array, (size_t)25555);
     assert(data != NULL);
@@ -74,7 +74,7 @@ void test_append_static_array() {
     assert(get_first(&dynamic_array) != get_last(&dynamic_array));
     assert(*(int*)get_first(&dynamic_array) != *(int*)get_last(&dynamic_array));
     size_t array_len;
-    assert(get_len(&dynamic_array, &array_len) == true);
+    assert(get_len(&dynamic_array, &array_len) == NO_ERROR);
     assert(array_len == 9);
     //
     // Append string to dynamic-array
@@ -83,7 +83,7 @@ void test_append_static_array() {
     assert(append_static_array_elements_to_dyn_array(&dynamic_array, (void*)static_char_array, sizeof(char), static_char_array_len) == NO_ERROR);
     assert(get_first(&dynamic_array) != get_last(&dynamic_array));
     assert(*(char*)get_first(&dynamic_array) != *(char*)get_last(&dynamic_array));
-    assert(get_len(&dynamic_array, &array_len) == true);
+    assert(get_len(&dynamic_array, &array_len) == NO_ERROR);
     assert(array_len == 9+static_char_array_len);
     //
     // Clear dynamic-array
@@ -105,7 +105,7 @@ void test_append_static_array_as_one_element() {
     assert(append_element_to_dyn_array(&dynamic_array, (void*)static_char_array, sizeof(char)*((size_t)static_char_array_len)) == NO_ERROR);
     assert(get_first(&dynamic_array) == get_last(&dynamic_array));
     size_t array_len;
-    assert(get_len(&dynamic_array, &array_len) == true);
+    assert(get_len(&dynamic_array, &array_len) == NO_ERROR);
     assert(array_len == 1);
     //
     // Get string from dynamic-array
@@ -131,17 +131,17 @@ void test_append_dyn_arrays_inplace() {
     assert(append_element_to_dyn_array(&dynamic_array_b, (void*)static_char_array, sizeof(char)*((size_t)static_char_array_len)) == NO_ERROR);
     assert(get_first(&dynamic_array_b) == get_last(&dynamic_array_b));
     size_t array_len;
-    assert(get_len(&dynamic_array_b, &array_len) == true);
+    assert(get_len(&dynamic_array_b, &array_len) == NO_ERROR);
     assert(array_len == 1);
     //
     // Append string-element from dynamic-array-B to dynamic-array-A
-    assert(append_dyn_arrays_inplace(&dynamic_array_a, &dynamic_array_b) == true);
-    assert(get_len(&dynamic_array_a, &array_len) == true);
+    assert(append_dyn_arrays_inplace(&dynamic_array_a, &dynamic_array_b) == NO_ERROR);
+    assert(get_len(&dynamic_array_a, &array_len) == NO_ERROR);
     assert(array_len == 1);
     //
     // Append string-element from dynamic-array-B to dynamic-array-A again
-    assert(append_dyn_arrays_inplace(&dynamic_array_a, &dynamic_array_b) == true);
-    assert(get_len(&dynamic_array_a, &array_len) == true);
+    assert(append_dyn_arrays_inplace(&dynamic_array_a, &dynamic_array_b) == NO_ERROR);
+    assert(get_len(&dynamic_array_a, &array_len) == NO_ERROR);
     assert(array_len == 2);
     //
     // Get both string-elements from dynamic-array-A
@@ -324,6 +324,65 @@ void test_replace_element_by_index() {
     assert(dynamic_array.tail_ptr == NULL);
 }
 
+void test_insert_element_at_index() {
+    size_t iterated_dyn_array_len;
+    DynArray dynamic_array;
+    assert(init_dyn_array(&dynamic_array) == NO_ERROR);
+    //
+    // Append static-integer-array to dynamic-array
+    int static_int_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    assert(append_static_array_elements_to_dyn_array(&dynamic_array, (void*)static_int_array, sizeof(int), (size_t)9) == NO_ERROR);
+    assert(get_len(&dynamic_array, &iterated_dyn_array_len) == NO_ERROR);
+    assert(dynamic_array.length == iterated_dyn_array_len);
+    //
+    // Insert additional element at index 0
+    int additional_element = 1337;
+    assert(insert_element_at_index(&dynamic_array, (size_t)0, (void*)&additional_element, sizeof(int)) == NO_ERROR);
+    assert(dynamic_array.length == 10);
+    assert(get_len(&dynamic_array, &iterated_dyn_array_len) == NO_ERROR);
+    assert(dynamic_array.length == iterated_dyn_array_len);
+    assert(*(int*)get_element_by_index(&dynamic_array, 0) == 1337);
+    assert(*(int*)get_element_by_index(&dynamic_array, 9) == 9);
+    //
+    // Insert additional element at index 9
+    additional_element = 9999;
+    assert(insert_element_at_index(&dynamic_array, (size_t)9, (void*)&additional_element, sizeof(int)) == NO_ERROR);
+    assert(dynamic_array.length == 11);
+    assert(get_len(&dynamic_array, &iterated_dyn_array_len) == NO_ERROR);
+    assert(dynamic_array.length == iterated_dyn_array_len);
+    assert(*(int*)get_element_by_index(&dynamic_array, 0) == 1337);
+    assert(*(int*)get_element_by_index(&dynamic_array, 9) == 9999);
+    assert(*(int*)get_element_by_index(&dynamic_array, 10) == 9);
+    //
+    // Insert additional element at index 10
+    additional_element = 1111;
+    assert(insert_element_at_index(&dynamic_array, (size_t)10, (void*)&additional_element, sizeof(int)) == NO_ERROR);
+    assert(dynamic_array.length == 12);
+    assert(get_len(&dynamic_array, &iterated_dyn_array_len) == NO_ERROR);
+    assert(dynamic_array.length == iterated_dyn_array_len);
+    assert(*(int*)get_element_by_index(&dynamic_array, 0) == 1337);
+    assert(*(int*)get_element_by_index(&dynamic_array, 9) == 9999);
+    assert(*(int*)get_element_by_index(&dynamic_array, 10) == 1111);
+    assert(*(int*)get_element_by_index(&dynamic_array, 11) == 9);
+    //
+    // Insert additional element at index 0 (again)
+    additional_element = 2222;
+    assert(insert_element_at_index(&dynamic_array, (size_t)0, (void*)&additional_element, sizeof(int)) == NO_ERROR);
+    assert(dynamic_array.length == 13);
+    assert(get_len(&dynamic_array, &iterated_dyn_array_len) == NO_ERROR);
+    assert(dynamic_array.length == iterated_dyn_array_len);
+    assert(*(int*)get_element_by_index(&dynamic_array, 0) == 2222);
+    assert(*(int*)get_element_by_index(&dynamic_array, 1) == 1337);
+    assert(*(int*)get_element_by_index(&dynamic_array, 10) == 9999);
+    assert(*(int*)get_element_by_index(&dynamic_array, 11) == 1111);
+    assert(*(int*)get_element_by_index(&dynamic_array, 12) == 9);
+    //
+    // Clear dynamic-array
+    assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
+    assert(dynamic_array.head_ptr == NULL);
+    assert(dynamic_array.tail_ptr == NULL);
+}
+
 //
 
 /*
@@ -391,6 +450,7 @@ int main() {
     test_append_dyn_arrays_inplace();
     test_swap_elements_by_indices();
     test_replace_element_by_index();
+    test_insert_element_at_index();
 
     //
 
