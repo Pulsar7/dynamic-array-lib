@@ -2,7 +2,6 @@
 #define DYNAMIC_ARRAY_LIB_DYNAMIC_ARRAY_H
 
 #include <stddef.h>
-#include <stdbool.h>
 
 /*
 Define enums, structs
@@ -37,11 +36,11 @@ Error_Code init_dyn_array(DynArray* dynamic_array);
 Error_Code append_element_to_dyn_array(DynArray* dynamic_array, const void* data, const size_t data_size);
 void* get_last(const DynArray* dynamic_array);
 void* get_first(const DynArray* dynamic_array);
-bool get_len(const DynArray* dynamic_array, size_t* len);
+Error_Code get_len(const DynArray* dynamic_array, size_t* len);
 Error_Code append_static_array_elements_to_dyn_array(DynArray* dynamic_array, const void* static_array, const size_t static_array_elem_size, const size_t static_array_len);
 DynArrayNode* get_element_ptr_by_index(const DynArray* dynamic_array, const size_t index);
 void* get_element_by_index(const DynArray* dynamic_array, const size_t index);
-bool append_dyn_arrays_inplace(DynArray* a, const DynArray* b);
+Error_Code append_dyn_arrays_inplace(DynArray* a, const DynArray* b);
 Error_Code swap_elements_by_indices(DynArray* dynamic_array, const size_t index_a, const size_t index_b);
 Error_Code replace_element_by_index(DynArray* dynamic_array, const size_t index, const void* data, const size_t data_size);
 Error_Code insert_element_at_index(DynArray* dynamic_array, const size_t index, const void* data, const size_t data_size);

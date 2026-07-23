@@ -95,7 +95,7 @@ for (int value = 0; value < 50; value++) {
 //
 // Get amount of elments in dynamic-array
 size_t array_len;
-if (get_len(&dynamic_array, &array_len) == true) {
+if (get_len(&dynamic_array, &array_len) == NO_ERROR) {
     printf("length of dynamic-array=%d\n", array_len);
 } else {
     printf("Couldn't get length of dynamic-array\n");
@@ -188,7 +188,7 @@ size_t static_char_array_len = strlen(static_char_array);
 if (append_element_to_dyn_array(&dynamic_array_b, (void*)static_char_array, sizeof(char)*((size_t)static_char_array_len)) == NO_ERROR) {
     //
     // Append string-element from dynamic-array-B to dynamic-array-A
-    if (append_dyn_arrays_inplace(&dynamic_array_a, &dynamic_array_b)) {
+    if (append_dyn_arrays_inplace(&dynamic_array_a, &dynamic_array_b) == NO_ERROR) {
         printf("%s\n", (char*)get_element_by_index(&dynamic_array_a, 0));
     }
 }
