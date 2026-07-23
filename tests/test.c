@@ -337,12 +337,34 @@ void test_insert_element_at_index() {
     assert(insert_element_at_index(&dynamic_array, (size_t)0, (void*)&additional_element, sizeof(int)) == NO_ERROR);
     assert(dynamic_array.length == 10);
     assert(*(int*)get_element_by_index(&dynamic_array, 0) == 1337);
+    assert(*(int*)get_element_by_index(&dynamic_array, 9) == 9);
     //
     // Insert additional element at index 9
     additional_element = 9999;
     assert(insert_element_at_index(&dynamic_array, (size_t)9, (void*)&additional_element, sizeof(int)) == NO_ERROR);
     assert(dynamic_array.length == 11);
+    assert(*(int*)get_element_by_index(&dynamic_array, 0) == 1337);
     assert(*(int*)get_element_by_index(&dynamic_array, 9) == 9999);
+    assert(*(int*)get_element_by_index(&dynamic_array, 10) == 9);
+    //
+    // Insert additional element at index 10
+    additional_element = 1111;
+    assert(insert_element_at_index(&dynamic_array, (size_t)10, (void*)&additional_element, sizeof(int)) == NO_ERROR);
+    assert(dynamic_array.length == 12);
+    assert(*(int*)get_element_by_index(&dynamic_array, 0) == 1337);
+    assert(*(int*)get_element_by_index(&dynamic_array, 9) == 9999);
+    assert(*(int*)get_element_by_index(&dynamic_array, 10) == 1111);
+    assert(*(int*)get_element_by_index(&dynamic_array, 11) == 9);
+    //
+    // Insert additional element at index 0 (again)
+    additional_element = 2222;
+    assert(insert_element_at_index(&dynamic_array, (size_t)0, (void*)&additional_element, sizeof(int)) == NO_ERROR);
+    assert(dynamic_array.length == 13);
+    assert(*(int*)get_element_by_index(&dynamic_array, 0) == 2222);
+    assert(*(int*)get_element_by_index(&dynamic_array, 1) == 1337);
+    assert(*(int*)get_element_by_index(&dynamic_array, 10) == 9999);
+    assert(*(int*)get_element_by_index(&dynamic_array, 11) == 1111);
+    assert(*(int*)get_element_by_index(&dynamic_array, 12) == 9);
     //
     // Clear dynamic-array
     assert(clear_dyn_array(&dynamic_array) == NO_ERROR);
